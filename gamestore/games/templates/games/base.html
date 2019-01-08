@@ -7,14 +7,18 @@
     {% load static %}
     <link type="text/css" rel="stylesheet" href="{% static 'games/main.css' %}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
-
-
     <title>Game Store</title>
 </head>
 <body>
     <h1>Game Store Testing</h1>
-    <code>Yahoooo!</code>
-    <div>0 error, 0 warning</div>
+
+    {% if user.is_authenticated %}
+    <form action=" {% url 'games:logout_user' %}">
+        <button type="submit" class="btn btn-success">Log Out</button>
+    </form>
+    {% endif %}
+
+    {% block content %}{% endblock content %}
 
     <!--JavaScript at end of body for optimized loading-->
     <script type="text/javascript" src="{% static 'games/main.js' %}"></script>

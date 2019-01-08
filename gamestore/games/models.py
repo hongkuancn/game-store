@@ -9,7 +9,7 @@ class Player(models.Model):
     id - automatic
     username - CharField
     email - EmailField
-    password - CharField ?
+    password - CharField
     bought_games - p1.boughtgame_set.all()
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -52,6 +52,7 @@ class Game(models.Model):
     developer - point to Developer class
     url_link - URLField   !!!
     """
+    name = models.CharField(max_length=50,unique=True,blank=True)
     developer = models.ForeignKey(
         Developer, on_delete=models.CASCADE, related_name='developedgames')
     price = models.FloatField()
