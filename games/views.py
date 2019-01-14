@@ -31,7 +31,7 @@ def thanks(request):
 
 def logout_user(request):
     logout(request)
-    return render(request, "games/thanks.html")
+    return render(request, "games/base.html")
 
 """
 POST handlers
