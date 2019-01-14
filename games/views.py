@@ -3,8 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 
 from .models import Developer, Player
-from .forms import SignupForm
-from .forms import LoginForm
+from .forms import SignupForm, LoginForm
 
 """
 GET handlers
@@ -79,20 +78,14 @@ def log_user_in(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
-            username = request.POST['username']
-            password = request.POST['password']
-            userType = request.POST['userType']
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
-            if userType != 'developer' and userType != 'player':
-                newForm = LoginForm()
-                return render(request, "games/login.html", {"error": "Bad guy!", "form": newForm})
+
             if user is None:
                 newForm = LoginForm()
-                return render(request, "games/login.html", {"error": "Username doesn't exists", "form": newForm})
-            elif userType == 'developer' and user is not None:
+                return render(request, "games/login.html", {"error": "User doesn't exists", "form": newForm})
+            else:
                 login(request, user)
                 return redirect("games:index")
-            elif userType == 'player' and user is not None:
-                login(request, user)
-                return redirect("games:index") 
     return render(request, "games/base.html")
