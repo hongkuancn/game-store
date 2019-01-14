@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 from .models import Developer, Player
 from .forms import SignupForm
+from .forms import LoginForm
 
 """
 GET handlers
@@ -14,15 +15,16 @@ def index(request):
 
 def signup_page(request):
     if request.user.is_authenticated:
-        return redirect("games:login")
+        return redirect("games:thanks")
     form = SignupForm()
     return render(request, "games/signup.html", {'form': form})
 
 
 def login_page(request):
     if request.user.is_authenticated:
-        return redirect("games:login")
-    return render(request, "games/login.html")
+        return redirect("games:thanks")
+    form = LoginForm()
+    return render(request, "games/login.html", {'form': form})
 
 
 def thanks(request):
@@ -74,4 +76,23 @@ def signup_user(request):
     return render(request, "games/base.html")
 
 def log_user_in(request):
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = request.POST['username']
+            password = request.POST['password']
+            userType = request.POST['userType']
+            user = authenticate(request, username=username, password=password)
+            if userType != 'developer' and userType != 'player':
+                newForm = LoginForm()
+                return render(request, "games/login.html", {"error": "Bad guy!", "form": newForm})
+            if user is None:
+                newForm = LoginForm()
+                return render(request, "games/login.html", {"error": "Username doesn't exists", "form": newForm})
+            elif userType == 'developer' and user is not None:
+                login(request, user)
+                return redirect("games:index")
+            elif userType == 'player' and user is not None:
+                login(request, user)
+                return redirect("games:index") 
     return render(request, "games/base.html")
