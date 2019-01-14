@@ -1,8 +1,14 @@
 {% extends "games/base.html" %}
 
 {% block content %}
-<form>
-    {% csrf_token %}
+<form class="container" action="{% url 'games:log_user_in' %}" method="post">
 
+    <div class="text-danger" role="alert">
+        {{ error }}
+    </div>
+
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit" class="btn btn-primary">Login</button>
 </form>
 {% endblock content %}
