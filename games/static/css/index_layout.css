@@ -1,0 +1,10 @@
+body{
+    color: black;
+    overflow-x:hidden;
+}
+.carousel-inner img{
+    width: 100%;
+}
+.carousel-inner{
+    height: 577px;
+}
