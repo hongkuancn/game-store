@@ -8,3 +8,8 @@ body{
 .carousel-inner{
     height: 577px;
 }
+#c{
+    width: 50px;
+    alignment: right;
+    background-color: black;
+}

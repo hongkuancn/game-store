@@ -8,6 +8,8 @@
     {% block prerequisites %}
 
     {% endblock %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static "css/parent_layout.css" %}">
     <!--link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -18,13 +20,13 @@
 <body>
     <div class="select2-container">
         <!-- navigate bar on top -->
-        <nav class="navbar navbar-default">
+        <nav class="navbar navbar-default" id="navigator">
             <div class="container-fluid">
                 <div class="navbar-header">
                     <a class="navbar-brand" href="#">2333</a>
                 </div>
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">HOME</a></li>
+                    <li class="active" id="current_pg"><a href="#">HOME</a></li>
                     <li><a href="#">ABOUT</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -33,7 +35,7 @@
                             <span class="glyphicon glyphicon-chevron-down"></span></a>
 
                         <!-- TODO: change the contents based on current status of the visitor-->
-                        <ul class="dropdown-menu">
+                        <ul class="dropdown-menu" id="dropdown_list">
                             <li><button class="btn btn-danger navbar-btn">Log In</button></li>
                             <li><a href="#">Create New Account</a></li>
                         </ul>
