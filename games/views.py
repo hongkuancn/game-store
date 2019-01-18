@@ -3,13 +3,20 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.core import mail
 
-from .models import Developer, Player, Game, BoughtGame
+from .models import Developer, Player, Game, BoughtGame, Label
 from .forms import SignupForm, LoginForm, CreateNewGameForm
 
 """
 GET handlers
 """
 def index(request):
+    # TODO: where to initial the three instances
+    if not Label.objects.filter(type='adventure').exists():
+        l1 = Label.objects.create(type='adventure').save()
+    if not Label.objects.filter(type='puzzle').exists():
+        l2 = Label.objects.create(type='puzzle').save()
+    if not Label.objects.filter(type='action').exists():
+        l3 = Label.objects.create(type='action').save()
     return render(request, "games/base.html")
 
 
@@ -29,7 +36,6 @@ def login_page(request):
 
 def thanks(request):
     return render(request, "games/thanks.html")
-
 
 def newgame_page(request):
     form = CreateNewGameForm()
@@ -97,7 +103,6 @@ def log_user_in(request):
                 return render(request, "games/login.html", {"error": "User doesn't exists", "form": newForm})
             else:
                 login(request, user)
-                print(request.user.id)
                 return redirect("games:index")
     return render(request, "games/base.html")
 
@@ -112,8 +117,21 @@ def create_new_game(request):
             label = request.POST['label']
             # image = request.FILES['image']
             developer = User.objects.get(pk=request.user.id).developer
-            # TODO: label field
-            game = Game.objects.create(name=name,price=price,url_link=url,description=description, developer=developer)
-            game.save()
+
+            if Game.objects.filter(name=name).exists():
+                newForm = CreateNewGameForm()
+                return render(request, "games/newgame.html", {"error": "Same game name exists", "form": newForm})
+
+            if name is not None and price is not None and url is not None and description is not None and label is not None and developer is not None:
+            # if Label.objects.filter(type=label).exists():
+                l = get_object_or_404(Label, type=label)
+                game = Game.objects.create(name=name, price=price, url_link=url, description=description, developer=developer, label=l).save()
+            # else:
+            #     new_label = Label.objects.create(type=label)
+            #     new_label.save()
+            #     game = Game.objects.create(name=name, price=price, url_link=url, description=description, developer=developer, label=new_label).save()
+            else:
+                newForm = CreateNewGameForm()
+                return render(request, "games/newgame.html", {"error": "Required field should be filled", "form": newForm})
 
     return render(request, "games/base.html")

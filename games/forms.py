@@ -1,5 +1,6 @@
 from django import forms
 
+
 class SignupForm(forms.Form):
     username = forms.CharField(label='Username', max_length=100)
     email = forms.EmailField()
@@ -13,6 +14,7 @@ class SignupForm(forms.Form):
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'form-control'
 
+
 class LoginForm(forms.Form):
     username = forms.CharField(label='Username', max_length=100)
     password = forms.CharField(label='Password', widget=forms.PasswordInput())
@@ -21,6 +23,8 @@ class LoginForm(forms.Form):
         super(LoginForm, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'form-control'
+
+
 class CreateNewGameForm(forms.Form):
     name = forms.CharField(label='Name', max_length=100)
     price = forms.FloatField(label='Price')

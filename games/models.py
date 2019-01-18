@@ -32,6 +32,7 @@ class Developer(models.Model):
     def __str__(self):
         return self.user.username
 
+
 class Label(models.Model):
     """
     type - CharField
@@ -40,6 +41,10 @@ class Label(models.Model):
 
     def __str__(self):
         return self.type
+
+    class Meta:
+        ordering = ('type',)
+
 
 class Game(models.Model):
     """
@@ -60,7 +65,8 @@ class Game(models.Model):
     game_profile_picture = models.CharField(max_length=150)
     url_link = models.URLField()
     description = models.TextField()
-    labels = models.ManyToManyField(Label)
+    # label = models.ManyToManyField(Label)
+    label = models.ForeignKey(Label, on_delete=models.CASCADE, default=1)
     sales = models.IntegerField(default=0,validators=[MinValueValidator(0)])
 
     def __str__(self):
