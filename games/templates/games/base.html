@@ -11,6 +11,8 @@
 </head>
 <body>
     <h1>Game Store Testing</h1>
+    <p>{{user.is_authenticated}}</p>
+    <p>{{user.username}}</p>
 
     {% if user.is_authenticated %}
     <form action=" {% url 'games:logout_user' %}">
