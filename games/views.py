@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.core import mail
+from django.http import HttpResponse, Http404
 
 from .models import Developer, Player, Game, BoughtGame, Label
 from .forms import SignupForm, LoginForm, CreateNewGameForm
@@ -133,5 +134,14 @@ def create_new_game(request):
             else:
                 newForm = CreateNewGameForm()
                 return render(request, "games/newgame.html", {"error": "Required field should be filled", "form": newForm})
-
     return render(request, "games/base.html")
+
+def gaming(request, game_id):
+    try:
+         game = Game.objects.get(pk = game_id)
+    except Game.DoesNotExist:
+         raise Http404("Game does not exist")
+    return render(request, "games/gaming.html", {"game":game})
+
+def games(request):
+    return render(request, "games/gaming.html")

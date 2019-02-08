@@ -12,5 +12,7 @@ urlpatterns = [
     path('logout_user', views.logout_user, name='logout_user'),
     path('newgame_page', views.newgame_page, name='newgame_page'),
     path('create_new_game', views.create_new_game, name='create_new_game'),
+    path('gaming', views.games, name='games'),
+    path('gaming/<int:game_id>/', views.gaming, name='gaming'),
     path('thanks', views.thanks, name='thanks'),
 ]
