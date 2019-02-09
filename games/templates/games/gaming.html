@@ -2,7 +2,7 @@
 
 {% block prerequisites %}
     {% load static %}
-    <link rel="stylesheet" href="{% static "css/gaming_layout.css" %}">
+    <link rel="stylesheet" href="{% static 'css/gaming_layout.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -21,9 +21,7 @@
 
         <div class="row">
             <div class="col-xs-9 col-sm-6 col-lg-9" style="background-color: aliceblue">
-                <iframe class="game" src="{{game.url_link}}">
-
-                </iframe>
+                <iframe class="game" src="{{game.url_link}}"></iframe>
                 <div class="row">
                     <div class="col-xs-9 col-sm-6 col-lg-9">
                         <button class="btn btn-danger navbar-btn">SAVE</button>
@@ -46,8 +44,55 @@
             </div>
         </div>
     </div>
-    <script src="code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script scr="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <script>
-         
+    $(document).ready( function() {
+        "use strict";
+
+    // Listen incoming messages
+        window.addEventListener("message", function(evt) {
+            alert(JSON.stringify(evt.data));
+            switch(evt.data.messageType) {
+            case "save":
+                break;
+            case "SETTING":
+                iframe.style.width = evt.data.options.width+"px";
+                iframe.style.height = evt.data.options.height+"px";
+                break;
+            case "ERROR":
+                alert(evt.data.info);
+                break;
+            } 
+
+            var csrftoken = $.cookie('csrftoken');
+
+            function csrfSafeMethod(method) {
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+            
+            $.ajax({
+                method: "POST",
+                url: '/ajax/handle_message/',
+                data: {message: JSON.stringify(evt.data), game_id: {{game.id}} },
+                dataType: 'json',
+                success: function (data) {
+                    if(data.messageType=="LOAD") {
+                        data.gameState = JSON.parse(data.gameState.replace(/'/g, '"'));
+                        iframe.contentWindow.postMessage(data, '*');
+                    }
+                }
+            });
+        });
+        
+    });
     </script>
 {% endblock %}
