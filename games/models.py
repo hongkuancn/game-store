@@ -72,6 +72,25 @@ class Game(models.Model):
     def __str__(self):
         return self.name
 
+class GameState(models.Model):
+    """
+    user - point to User class
+    game - point to Game class
+    state - CharField
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='gamestate')
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='gamestate')
+    state = models.CharField(max_length=511, default='', unique=False)
+
+class BestScore(models.Model):
+    """
+    user - point to User class
+    game - point to Game class
+    score - FloatField
+    """
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='bestscores')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bestscores')
+    score = models.FloatField()
 
 class BoughtGame(models.Model):
     """
@@ -84,7 +103,7 @@ class BoughtGame(models.Model):
     user = models.ManyToManyField(Player)
     game_info = models.ForeignKey(Game, on_delete=models.CASCADE)
     bought_time = models.DateField(auto_now_add=True)
-    best_score = models.IntegerField()
+    #best_score = models.IntegerField()
 
     def __str__(self):
         return '{0} bought {1}'.format(self.user.username, self.game_info.name)
