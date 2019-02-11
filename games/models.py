@@ -76,11 +76,11 @@ class GameState(models.Model):
     """
     user - point to User class
     game - point to Game class
-    state - CharField
+    game_state - CharField
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='gamestate')
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='gamestate')
-    state = models.CharField(max_length=511, default='', unique=False)
+    game_state = models.CharField(max_length=511, default='', unique=False)
 
 class BestScore(models.Model):
     """
