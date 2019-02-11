@@ -68,7 +68,6 @@ class Game(models.Model):
     game_profile_picture = models.CharField(max_length=150)
     url_link = models.URLField()
     description = models.TextField()
-    # label = models.ManyToManyField(Label)
     label = models.ForeignKey(Label, on_delete=models.CASCADE, default=1)
     sales = models.IntegerField(default=0,validators=[MinValueValidator(0)])
 
