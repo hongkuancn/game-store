@@ -3,8 +3,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.core import mail
 from django.http import HttpResponse, Http404
+import json
+from django.http import JsonResponse
 
-from .models import Developer, Player, Game, BoughtGame, Label
+from .models import Developer, Player, Game, BoughtGame, Label, BestScore, GameState
 from .forms import SignupForm, LoginForm, CreateNewGameForm
 
 """
@@ -136,12 +138,52 @@ def create_new_game(request):
                 return render(request, "games/newgame.html", {"error": "Required field should be filled", "form": newForm})
     return render(request, "games/base.html")
 
-def gaming(request, game_id):
+def games(request, game_id):
     try:
          game = Game.objects.get(pk = game_id)
     except Game.DoesNotExist:
          raise Http404("Game does not exist")
     return render(request, "games/gaming.html", {"game":game})
 
-def games(request):
-    return render(request, "games/gaming.html")
+def gaming(request):
+    response = {}
+    if request.is_ajax():
+        if request.method == 'POST':
+            currentUser = request.user
+            game = Game.objects.filter(pk=request.POST['id']).first()
+            data = json.loads(request.POST['data'])
+            messageType = data['messageType']
+            if messageType == "SAVE":
+                    gameState = data['gameState']
+                    currentState = GameState(user=currentUser, game=game, game_state = gameState)
+                    currentState.save()
+                    response = {
+                       'messageType':"SAVE",
+                       'gameState':gameState
+                    }
+            elif messageType == "LOAD_REQUEST":
+                    gameState = GameState.objects.filter(user=currentUser, game=game).values('game_state').last()
+                    state = gameState['game_state']
+                    response = {
+                        'messageType':"LOAD",
+                        'gameState':state
+                    }
+            elif messageType == "SCORE":
+                    newScore = data['score']
+                    bestScore = BestScore.objects.filter(user=currentUser, game=game).values("score").first()
+                    newBestscore = BestScore(user=currentUser, game=game, score=newScore)
+                    newBestscore.save()
+                    scoreList = BestScore.objects.filter(game=game).order_by('id')[:3]
+                    bestScores = ""
+                    for scores in scoreList:
+                        bestScores = bestScores + "<tr><td>" + scores.user.username + "</td><td>" + str(scores.score) + "</td></tr>"
+                    response = {
+                        'messageType':"SCORE",
+                        'bestScore': bestScores
+                    }
+            elif messageType == "ERROR":
+                    response = {
+                        'messageType':"ERROR",
+                        'error': "There is an error"
+                    }
+    return JsonResponse(response)
