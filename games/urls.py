@@ -13,9 +13,10 @@ urlpatterns = [
     path('newgame_page', views.newgame_page, name='newgame_page'),
     path('create_new_game', views.create_new_game, name='create_new_game'),
     path('thanks', views.thanks, name='thanks'),
-    # path('gaming', views.gaming, name='gaming'),
     path('payment/success', views.payment_success, name='payment_success'),
     path('payment/error', views.payment_error, name='payment_error'),
     path('payment/cancel', views.payment_cancel, name='payment_cancel'),
-    path('detail/<int:game_id>', views.game_detail, name='game_detail')
+    path('detail/<int:game_id>', views.game_detail, name='game_detail'),
+    path('dev/inventory', views.inventory, name='inventory'),
+    path('player/bought', views.player_game, name='player_game')
 ]

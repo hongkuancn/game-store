@@ -6,7 +6,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.core import mail
 from django.urls import reverse
-from datetime import datetime
 
 from .models import Developer, Player, Game, BoughtGame, Label, Payment
 from .forms import SignupForm, LoginForm, CreateNewGameForm
@@ -53,6 +52,12 @@ def logout_user(request):
     logout(request)
     return redirect('games:index')
 
+def inventory(request):
+    user = get_object_or_404(User, pk=request.user.id)
+    if user.developer:
+        my_game_list = user.developer.developedgames.all()
+        return render(request, "games/inventory.html", {'my_game_list': my_game_list})
+
 def game_detail(request, game_id):
 
     game = get_object_or_404(Game, pk=game_id)
@@ -85,9 +90,14 @@ def game_detail(request, game_id):
     # checksum is the value that should be used in the payment request
     return render(request, "games/gaming.html", {'pid': pid, 'sid': sid, 'amount': amount, 'checksum': checksum})
 
+def player_game(request):
+    if request.user.is_authenticated:
+        user = get_object_or_404(User, pk=request.user.id)
+        if user.player:
+            my_bought_game_list = user.player.boughtgame_set.all()
+            return render(request, 'games/playersgames.html', {'my_bought_game_list': my_bought_game_list})
 
 def payment_error(request):
-    # if amount > 4:
     return render(request, "games/signup.html",)
 
 def payment_cancel(request):
@@ -127,7 +137,8 @@ def signup_user(request):
                 with mail.get_connection() as connection:
                     mail.EmailMessage("Thanks for your registration!", "Glorious! {}".format(username), "hongkuan.wang@aalto.fi", [email], connection=connection,).send()
                 login(request, user)
-                return redirect("games:index")
+                # Developer redirect to inventory page
+                return redirect("games:inventory")
             elif userType == 'player':
                 user = User.objects.create_user(
                     username=username, email=email, password=password)
@@ -137,7 +148,7 @@ def signup_user(request):
                     mail.EmailMessage("Thanks for your registration!", "Glorious! {}".format(
                         username), "hongkuan.wang@aalto.fi", [email], connection=connection,).send()
                 login(request, user)
-                return redirect("games:index")
+                return redirect("games:player_game")
     return redirect('games:index')
 
 def log_user_in(request):
@@ -153,7 +164,11 @@ def log_user_in(request):
                 return render(request, "games/login.html", {"error": "User doesn't exists", "form": newForm})
             else:
                 login(request, user)
-                return redirect("games:index")
+                if hasattr(user, 'developer'):
+                    # Developer redirect to inventory page
+                    return redirect("games:inventory")
+                elif hasattr(user, 'player'):
+                    return redirect("games:player_game")
     return redirect('games:index')
 
 def create_new_game(request):
@@ -203,6 +218,8 @@ def payment_success(request):
         if player.balance >= game.price:
             BoughtGame.objects.create(user=player, game_info=game, best_score=0, price=game.price).save()
             player.balance = F('balance') - game.price
+            game.sales = F('sales') + 1
+            game.save()
             player.save()
             payment.delete()
 
