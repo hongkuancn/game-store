@@ -173,7 +173,7 @@ def gaming(request):
                     bestScore = BestScore.objects.filter(user=currentUser, game=game).values("score").first()
                     newBestscore = BestScore(user=currentUser, game=game, score=newScore)
                     newBestscore.save()
-                    scoreList = BestScore.objects.filter(game=game).order_by('id')[:3]
+                    scoreList = BestScore.objects.filter(game=game).order_by('-score')[:3]
                     bestScores = ""
                     for scores in scoreList:
                         bestScores = bestScores + "<tr><td>" + scores.user.username + "</td><td>" + str(scores.score) + "</td></tr>"
