@@ -2,7 +2,7 @@
 
 {% block prerequisites %}
     {% load static %}
-    <link rel="stylesheet" href="{% static "css/gaming_layout.css" %}">
+    <link rel="stylesheet" href="{% static 'css/gaming_layout.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -12,7 +12,7 @@
         <!-- header to gaming -->
         <div class="row">
             <div class="col-xs-9 col-sm-6 col-lg-9">
-                <h1>Game Name</h1>
+                <h1>{{game.name}}</h1>
             </div>
             <div class="col-xs-3 col-sm-6 col-lg-3">
                 <!-- TODO: add price to the button -->
@@ -34,14 +34,8 @@
 
         <div class="row">
             <div class="col-xs-9 col-sm-6 col-lg-9" style="background-color: aliceblue">
-                <iframe class="game">
-
-                </iframe>
+                <iframe class="game" src="{{game.url_link}}"></iframe>
                 <div class="row">
-                    <div class="col-xs-9 col-sm-6 col-lg-9">
-                        <button class="btn btn-danger navbar-btn">SAVE</button>
-                        <button class="btn btn-danger navbar-btn">RELOAD</button>
-                    </div>
                     <div class="col-xs-3 col-sm-6 col-lg-3">
                         <p><a href="#">SHARE</a></p>
                     </div>
@@ -49,15 +43,67 @@
             </div>
             <div class="col-xs-3 col-sm-6 col-lg-3" style="background-color: aquamarine">
                 <h2>Introduction</h2>
-                <!-- TODO: add specific game introduction -->
-                <p>...</p>
+                <p>{{game.description}}</p>
                 <h2>Highest Scores</h2>
-                <ol>
-                    <li>100</li>
-                    <li>90</li>
-                    <li>90</li>
-                </ol>
+                <table id="bestScore">
+
+                </table>
             </div>
         </div>
     </div>
+    {% load static %}
+    {% endblock %}
+
+    {% block javascript %}
+
+    <script src="{% static 'js/jquery.cookie.js' %}"></script>
+    <script>
+    $(document).ready( function() {
+        "use strict";
+        var iframe = document.getElementsByTagName("iframe")[0];
+        var csrftoken = $.cookie('csrftoken');
+
+    // Listen incoming messages
+        window.addEventListener("message", function(evt) {
+            console.log(JSON.stringify(evt.data));
+            switch(evt.data.messageType) {
+                case "SETTING":
+                    iframe.style.width = evt.data.options.width+"px";
+                    iframe.style.height = evt.data.options.height+"px";
+                    break;
+                case "ERROR":
+                    alert(evt.data.info);
+                    break;
+            } 
+
+            function csrfSafeMethod(method) {
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+            
+            $.ajax({
+                method: "POST",
+                url: '/gaming/ajax',
+                data: {data: JSON.stringify(evt.data), id: {{game.id}} },
+                dataType: 'json',
+                success: function (data) {
+                    if(data.messageType=="LOAD") {
+                        data.gameState = JSON.parse(data.gameState.replace(/'/g, '"'));
+                        iframe.contentWindow.postMessage(data, '*');
+                    } else if(data.messageType="SCORE"){
+                        $("#bestScore").html(data.bestScore);
+                    }
+                }
+            });
+        });
+        
+    });
+    </script>
 {% endblock %}
