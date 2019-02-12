@@ -15,4 +15,10 @@ urlpatterns = [
     path('gaming/ajax', views.gaming, name='gameing'),
     path('gaming/<int:game_id>/', views.games, name='games'),
     path('thanks', views.thanks, name='thanks'),
+    path('payment/success', views.payment_success, name='payment_success'),
+    path('payment/error', views.payment_error, name='payment_error'),
+    path('payment/cancel', views.payment_cancel, name='payment_cancel'),
+    path('detail/<int:game_id>', views.game_detail, name='game_detail'),
+    path('dev/inventory', views.inventory, name='inventory'),
+    path('player/bought', views.player_game, name='player_game')
 ]

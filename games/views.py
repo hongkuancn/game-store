@@ -1,3 +1,6 @@
+from random import *
+import string
+from django.db.models import F
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
@@ -7,6 +10,9 @@ import json
 from django.http import JsonResponse
 
 from .models import Developer, Player, Game, BoughtGame, Label, BestScore, GameState
+from django.urls import reverse
+
+from .models import Developer, Player, Game, BoughtGame, Label, Payment
 from .forms import SignupForm, LoginForm, CreateNewGameForm
 
 """
@@ -20,7 +26,9 @@ def index(request):
         l2 = Label.objects.create(type='puzzle').save()
     if not Label.objects.filter(type='action').exists():
         l3 = Label.objects.create(type='action').save()
-    return render(request, "games/base.html")
+
+    games = Game.objects.all()
+    return render(request, "games/index.html", {'game_list': games})
 
 
 def signup_page(request):
@@ -40,13 +48,66 @@ def login_page(request):
 def thanks(request):
     return render(request, "games/thanks.html")
 
+
 def newgame_page(request):
     form = CreateNewGameForm()
     return render(request, "games/newgame.html", {'form': form})
 
 def logout_user(request):
     logout(request)
-    return render(request, "games/base.html")
+    return redirect('games:index')
+
+def inventory(request):
+    user = get_object_or_404(User, pk=request.user.id)
+    if user.developer:
+        my_game_list = user.developer.developedgames.all()
+        return render(request, "games/inventory.html", {'my_game_list': my_game_list})
+
+def game_detail(request, game_id):
+
+    game = get_object_or_404(Game, pk=game_id)
+
+    # Generate random string for pid
+    min_char = 8
+    max_char = 12
+    allchar = string.ascii_letters + string.digits
+    rdmstr = "".join(choice(allchar)
+                        for x in range(randint(min_char, max_char)))
+
+    from hashlib import md5
+
+    pid = '{}{}'.format(game.name, rdmstr)
+    sid = '2333'
+    amount = game.price
+    secret_key = '786e1a1033b80aec7b150581c209be39'
+    checksumstr = "pid={}&sid={}&amount={}&token={}".format(
+        pid, sid, amount, secret_key)
+
+    # checksumstr is the string concatenated above
+    m = md5(checksumstr.encode("ascii"))
+    checksum = m.hexdigest()
+
+    # if there is no such pid
+    if not Payment.objects.filter(pid=pid).exists():
+        Payment.objects.create(game=game, pid=pid).save()
+        # TODO: if payment already exists, which page to go
+
+    # checksum is the value that should be used in the payment request
+    return render(request, "games/gaming.html", {'pid': pid, 'sid': sid, 'amount': amount, 'checksum': checksum})
+
+def player_game(request):
+    if request.user.is_authenticated:
+        user = get_object_or_404(User, pk=request.user.id)
+        if user.player:
+            my_bought_game_list = user.player.boughtgame_set.all()
+            return render(request, 'games/playersgames.html', {'my_bought_game_list': my_bought_game_list})
+
+def payment_error(request):
+    return render(request, "games/signup.html",)
+
+def payment_cancel(request):
+    return render(request, "games/login.html",)
+
 
 """
 POST handlers
@@ -63,7 +124,8 @@ def signup_user(request):
 
             if password != password_confirmation:
                 newForm = SignupForm()
-                return render(request, "games/signup.html", {"error": "Passwords not match", "form": newForm})
+                return render(request, "games/signup.html", {"error": "Username exists", "form": newForm})
+                # reverse("games:signup")
             if User.objects.filter(email=email).exists():
                 newForm = SignupForm()
                 return render(request, "games/signup.html", {"error": "Email exists", "form": newForm})
@@ -80,18 +142,19 @@ def signup_user(request):
                 with mail.get_connection() as connection:
                     mail.EmailMessage("Thanks for your registration!", "Glorious! {}".format(username), "hongkuan.wang@aalto.fi", [email], connection=connection,).send()
                 login(request, user)
-                return redirect("games:index")
+                # Developer redirect to inventory page
+                return redirect("games:inventory")
             elif userType == 'player':
                 user = User.objects.create_user(
                     username=username, email=email, password=password)
-                player = Player.objects.create(user=user).save()
+                player = Player.objects.create(user=user, balance=100).save()
                 user.save()
                 with mail.get_connection() as connection:
                     mail.EmailMessage("Thanks for your registration!", "Glorious! {}".format(
                         username), "hongkuan.wang@aalto.fi", [email], connection=connection,).send()
                 login(request, user)
-                return redirect("games:index")
-    return render(request, "games/base.html")
+                return redirect("games:player_game")
+    return redirect('games:index')
 
 def log_user_in(request):
     if request.method == "POST":
@@ -106,8 +169,12 @@ def log_user_in(request):
                 return render(request, "games/login.html", {"error": "User doesn't exists", "form": newForm})
             else:
                 login(request, user)
-                return redirect("games:index")
-    return render(request, "games/base.html")
+                if hasattr(user, 'developer'):
+                    # Developer redirect to inventory page
+                    return redirect("games:inventory")
+                elif hasattr(user, 'player'):
+                    return redirect("games:player_game")
+    return redirect('games:index')
 
 def create_new_game(request):
     if request.method == "POST":
@@ -187,3 +254,31 @@ def gaming(request):
                         'error': "There is an error"
                     }
     return JsonResponse(response)
+
+    return redirect('games:index')
+
+def payment_success(request):
+    if request.user.is_authenticated:
+        print(request.user.id)
+        user = get_object_or_404(User, pk=request.user.id)
+        print(user)
+        player = user.player
+
+        payment = get_object_or_404(Payment, pid=request.GET.get('pid'))
+        game = payment.game
+
+        if BoughtGame.objects.filter(user=player, game_info=game).exists():
+            # TODO: Already bought the game
+            return redirect('games:index')
+
+        if player.balance >= game.price:
+            BoughtGame.objects.create(user=player, game_info=game, best_score=0, price=game.price).save()
+            player.balance = F('balance') - game.price
+            game.sales = F('sales') + 1
+            game.save()
+            player.save()
+            payment.delete()
+
+        return redirect('games:index')
+    else:
+        return redirect('games:login')

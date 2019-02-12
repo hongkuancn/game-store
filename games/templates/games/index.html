@@ -67,8 +67,7 @@
             <!-- Below is one section of a game in game list-->
             <div class="col-xs-4 col-sm-4 col-lg-4" style="background-color:bisque">
                 <div class="thumbnail">
-                    <a href="#" target="_blank">
-                        <!-- TODO: add individual info -->
+                    <a href="#">
                         <img src="{% static "images/game3.jpg" %}" alt="Lights" style="width:100%">
                         <div class="caption">
                             <h3>GAME1</h3>
@@ -78,6 +77,23 @@
                     </a>
                 </div>
             </div>
+
+            {% for game in game_list %}
+
+            <div class="col-xs-4 col-sm-4 col-lg-4" style="background-color:bisque">
+                <div class="thumbnail">
+                        <a href=" {% url 'games:game_detail' game.id %}">
+                        <img src="{% static 'images/game3.jpg' %}" alt="Lights" style="width:100%">
+                        <div class="caption">
+                            <h3>{{game.name}}</h3>
+                            <p>{{ game.description | truncatechars:30 }}</p>
+                            <p>{{game.price}} €</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            {% endfor %}
 
         </div>
     </div>
