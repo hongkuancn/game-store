@@ -11,7 +11,6 @@ from django.http import JsonResponse
 
 from .models import Developer, Player, Game, BoughtGame, Label, BestScore, GameState
 from django.urls import reverse
-
 from .models import Developer, Player, Game, BoughtGame, Label, Payment
 from .forms import SignupForm, LoginForm, CreateNewGameForm
 
@@ -93,7 +92,7 @@ def game_detail(request, game_id):
         # TODO: if payment already exists, which page to go
 
     # checksum is the value that should be used in the payment request
-    return render(request, "games/gaming.html", {'pid': pid, 'sid': sid, 'amount': amount, 'checksum': checksum})
+    return render(request, "games/gaming.html", {'pid': pid, 'sid': sid, 'amount': amount, 'checksum': checksum, "game":game})
 
 def player_game(request):
     if request.user.is_authenticated:
@@ -204,13 +203,6 @@ def create_new_game(request):
                 newForm = CreateNewGameForm()
                 return render(request, "games/newgame.html", {"error": "Required field should be filled", "form": newForm})
     return render(request, "games/base.html")
-
-def games(request, game_id):
-    try:
-         game = Game.objects.get(pk = game_id)
-    except Game.DoesNotExist:
-         raise Http404("Game does not exist")
-    return render(request, "games/gaming.html", {"game":game})
 
 def gaming(request):
     response = {}
