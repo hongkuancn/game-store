@@ -1,15 +1,88 @@
 body{
-    color: black;
     overflow-x:hidden;
+}
+.carousel-inner{
+    width: 100%;
 }
 .carousel-inner img{
     width: 100%;
+    height: 100%;
 }
-.carousel-inner{
-    height: 577px;
+.row h2{
+    font-size: 20px;
+    font-family: Adobe Garamond;
+    letter-spacing: 2px;
+    margin-top: 3vw;
+    margin-left: 15px;
+    color: #b9c0d5;
 }
-#c{
-    width: 50px;
-    alignment: right;
-    background-color: black;
+.row h3{
+    font-size: 2vw;
+    font-family: Futura;
+    margin: 1vw;
+    /*color: #77abb7;*/
+}
+.row p{
+    font-size: 25px;
+    font-family: Futura;
+    margin: 1vw;
+    margin-bottom: 0;
+    /*color: #77abb7;*/
+}
+.cap{
+    overflow: auto;
+}
+.price{
+    float: right;
+    width: 25%;
+    margin-bottom: 1vw;
+}
+.price p{
+    font-size: 18px;
+    text-align: center;
+    background-color: #476d7c;
+}
+.row{
+    overflow: auto;
+}
+.nav-list{
+    width: 60%;
+    float: right;
+    margin-top: 4vw;
+    color: #77abb7;
+}
+.row>.nav-list>li>a:hover, .cate:hover {
+    color: #b9c0d5;
+    background-color: #1d3e53; !important;
+}
+.cate{
+    color: #77abb7;
+    font-family: Futura;
+    margin-top: -8px;
+}
+.nav-header{
+    font-size: 18px;
+    font-family: Adobe Garamond;
+    letter-spacing: 2px;
+    padding-left: 15px;
+    margin-bottom: 0.8vw;
+    color: #b9c0d5;
+}
+.gamesec .thumbnail{
+    background-color: #254b62;
+    border: none;
+}
+.gamesec .thumbnail:hover{
+    background-color: #77abb7;
+}
+.gamesec .sec{
+    background-color: #254b62;
+    color: #77abb7;
+    border: none;
+}
+
+.gamesec .sec:hover{
+    background-color: #77abb7;
+    color: #254b62;
+    text-decoration: none;
 }
