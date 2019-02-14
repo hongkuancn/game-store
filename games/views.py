@@ -2,7 +2,7 @@ from random import *
 import string
 from django.db.models import F
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.contrib.auth.models import User
 from django.core import mail
 from django.http import HttpResponse, Http404
@@ -114,12 +114,20 @@ def payment_cancel(request):
 
 def show_modify_game(request, game_id):
     game = get_object_or_404(Game, pk=game_id)
-    name = game.name
-    price = game.price
-    url = game.url_link
-    description = game.description
-    form = CreateNewGameForm(initial={'name': name, 'price': price, 'url': url, 'description': description})
-    return render(request, "games/modifygame.html", {'form': form, 'id': game_id})
+    if game.developer.user.id == request.user.id:
+        name = game.name
+        price = game.price
+        url = game.url_link
+        description = game.description
+        form = CreateNewGameForm(initial={'name': name, 'price': price, 'url': url, 'description': description})
+        return render(request, "games/modifygame.html", {'form': form, 'id': game_id})
+    return redirect("games:index")
+
+def game_purchase_history(request, game_id):
+    game = get_object_or_404(Game, pk=game_id)
+    if game.developer.user.id == request.user.id:
+        game_history = get_list_or_404(BoughtGame, game_info=game)
+    return render(request, 'games/statistics.html', {'game_history': game_history})
 
 """
 POST handlers
@@ -153,7 +161,8 @@ def signup_user(request):
                 user.save()
                 with mail.get_connection() as connection:
                     mail.EmailMessage("Thanks for your registration!", "Glorious! {}".format(username), "hongkuan.wang@aalto.fi", [email], connection=connection,).send()
-                login(request, user)
+                login(request, user,
+                      backend='django.contrib.auth.backends.ModelBackend')
                 # Developer redirect to inventory page
                 return redirect("games:inventory")
             elif userType == 'player':
@@ -164,7 +173,8 @@ def signup_user(request):
                 with mail.get_connection() as connection:
                     mail.EmailMessage("Thanks for your registration!", "Glorious! {}".format(
                         username), "hongkuan.wang@aalto.fi", [email], connection=connection,).send()
-                login(request, user)
+                login(request, user,
+                      backend='django.contrib.auth.backends.ModelBackend')
                 return redirect("games:player_game")
     return redirect('games:index')
 
@@ -197,7 +207,6 @@ def create_new_game(request):
             url = form.cleaned_data['url']
             description = form.cleaned_data['description']
             label = request.POST['label']
-            # image = request.FILES['image']
             developer = User.objects.get(pk=request.user.id).developer
 
             if Game.objects.filter(name=name).exists():
@@ -205,17 +214,16 @@ def create_new_game(request):
                 return render(request, "games/newgame.html", {"error": "Same game name exists", "form": newForm})
 
             if name is not None and price is not None and url is not None and description is not None and label is not None and developer is not None:
-            # if Label.objects.filter(type=label).exists():
-                l = get_object_or_404(Label, type=label)
-                game = Game.objects.create(name=name, price=price, url_link=url, description=description, developer=developer, label=l).save()
-            # else:
-            #     new_label = Label.objects.create(type=label)
-            #     new_label.save()
-            #     game = Game.objects.create(name=name, price=price, url_link=url, description=description, developer=developer, label=new_label).save()
+                if price >= 0:
+                    l = get_object_or_404(Label, type=label)
+                    game = Game.objects.create(name=name, price=int(price), url_link=url, description=description, developer=developer, label=l).save()
+                else:
+                    newForm = CreateNewGameForm()
+                    return render(request, "games/newgame.html", {"error": "Price cannot be negative!", "form": newForm})
             else:
                 newForm = CreateNewGameForm()
                 return render(request, "games/newgame.html", {"error": "Required field should be filled", "form": newForm})
-    return render(request, "games/base.html")
+    return redirect("games:inventory")
 
 def gaming(request):
     response = {}
@@ -274,7 +282,7 @@ def payment_success(request):
 
         if BoughtGame.objects.filter(user=player, game_info=game).exists():
             # TODO: Already bought the game
-            return redirect('games:index')
+            return redirect('games:player_game')
 
         if player.balance >= game.price:
             BoughtGame.objects.create(user=player, game_info=game, best_score=0, price=game.price).save()
@@ -284,7 +292,7 @@ def payment_success(request):
             player.save()
             payment.delete()
 
-        return redirect('games:index')
+        return redirect('games:player_game')
     else:
         return redirect('games:login')
 
