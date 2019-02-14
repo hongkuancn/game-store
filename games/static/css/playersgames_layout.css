@@ -1,0 +1,48 @@
+.row{
+    min-height: 1000px;
+}
+.row h2{
+    font-size: 20px;
+    font-family: Adobe Garamond;
+    letter-spacing: 2px;
+    margin-top: 2vw;
+    margin-bottom: 1vw;
+    margin-left: 15px;
+    color: #b9c0d5;
+}
+.row h3{
+    font-size: 2vw;
+    font-family: Futura;
+    margin: 1vw;
+    /*color: #77abb7;*/
+}
+.row p{
+    font-size: 25px;
+    font-family: Futura;
+    margin: 1vw;
+    margin-bottom: 0;
+    /*color: #77abb7;*/
+}
+.labels p{
+    font-size: 18px;
+    font-style: italic;
+    margin-bottom: 10px;
+}
+.gamesec .thumbnail{
+    background-color: #254b62;
+    border: none;
+}
+.gamesec .thumbnail:hover{
+    background-color: #77abb7;
+}
+.gamesec .sec{
+    background-color: #254b62;
+    color: #77abb7;
+    border: none;
+}
+
+.gamesec .sec:hover{
+    background-color: #77abb7;
+    color: #254b62;
+    text-decoration: none;
+}

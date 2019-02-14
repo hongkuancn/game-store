@@ -21,32 +21,31 @@
         <nav class="navbar navbar-default" id="navigator">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="#">2333</a>
+                    <a class="navbar-brand" href="#">╭( ′• o •′ )╭☞  2333</a>
                 </div>
-                <ul class="nav navbar-nav">
+
+                <ul class="nav navbar-nav" style="margin-bottom: 0px">
                     <li class="active" id="current_pg"><a href="{% url 'games:index' %}">HOME</a></li>
                     <li><a href="#">ABOUT</a></li>
                 </ul>
-                <ul class="nav navbar-nav navbar-right">
+                <ul class="nav navbar-nav navbar-right" style="padding-right: 0px; margin-top:0px; margin-bottom: 0px;">
                     <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">My Account
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="account">MY ACCOUNT
                             <span class="glyphicon glyphicon-chevron-down"></span></a>
 
                         <ul class="dropdown-menu" id="dropdown_list">
                             {% if user.is_authenticated %}
                                 {% if user.developer %}
                                     <li><a href=" {% url 'games:inventory' %}"><button type="submit" class="btn btn-success">Inventory</button></a></li>
-                                    {% elif user.player %}
+                                {% elif user.player %}
                                     <li><a href=" {% url 'games:player_game' %}"><button type="submit" class="btn btn-success">Bought Game</button></a></li>
                                 {% endif %}
-                                <li><a href=" {% url 'games:logout_user' %}"><button type="submit" class="btn btn-success">Log Out</button></a></li>
+                                <li><a href=" {% url 'games:logout_user' %}"><button type="submit" class="btn">Log Out</button></a></li>
                             {% else %}
-                                <li><a href=" {% url 'games:login' %}"><button class="btn btn-danger navbar-btn">Log In</button></a></li>
+                                <li><a href=" {% url 'games:login' %}"><button class="btn">Log In</button></a></li>
+                                <li><a href=" {% url 'social:begin' 'google-oauth2' %}"><button class="btn">Google Login</button></a></li>
                                 <li><a href=" {% url 'games:signup' %}">Create New Account</a></li>
                             {% endif %}
-<a class="btn btn-primary" href="{% url 'social:begin' 'google-oauth2' %}">
-    Google Login
-</a>
                         </ul>
                     </li>
                 </ul>
