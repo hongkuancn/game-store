@@ -37,7 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'games.apps.GamesConfig',
+
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -68,9 +71,24 @@ TEMPLATES = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    'social_core.backends.google.GoogleOAuth2',
+)
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '730325085268-urfo65hof3ntspvfbijnn08aip14615h.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'QPNkOSyi261vr3nzslVrjbS_'
+
 WSGI_APPLICATION = 'gamestore.wsgi.application'
 
+LOGIN_URL = '/auth/login/google-oauth2/'
 
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
@@ -131,3 +149,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
+
+SITE_ID = 1

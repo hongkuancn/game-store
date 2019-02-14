@@ -26,6 +26,11 @@ def index(request):
     if not Label.objects.filter(type='action').exists():
         l3 = Label.objects.create(type='action').save()
 
+    if request.user.is_authenticated:
+        user = get_object_or_404(User, pk=request.user.id)
+        if not hasattr(user, 'developer') and not hasattr(user, 'player'):
+            return render(request, "games/sociallogin.html")
+
     games = Game.objects.all()
     return render(request, "games/index.html", {'game_list': games})
 
@@ -107,6 +112,14 @@ def payment_error(request):
 def payment_cancel(request):
     return render(request, "games/login.html",)
 
+def show_modify_game(request, game_id):
+    game = get_object_or_404(Game, pk=game_id)
+    name = game.name
+    price = game.price
+    url = game.url_link
+    description = game.description
+    form = CreateNewGameForm(initial={'name': name, 'price': price, 'url': url, 'description': description})
+    return render(request, "games/modifygame.html", {'form': form, 'id': game_id})
 
 """
 POST handlers
@@ -177,7 +190,7 @@ def log_user_in(request):
 
 def create_new_game(request):
     if request.method == "POST":
-        form = CreateNewGameForm(request.POST, request.FILES)
+        form = CreateNewGameForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data['name']
             price = form.cleaned_data['price']
@@ -274,3 +287,55 @@ def payment_success(request):
         return redirect('games:index')
     else:
         return redirect('games:login')
+
+def modify_game(request, game_id):
+    if request.method == "POST":
+        form = CreateNewGameForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            price = form.cleaned_data['price']
+            url = form.cleaned_data['url']
+            description = form.cleaned_data['description']
+
+            game = get_object_or_404(Game, pk=game_id)
+            if game.developer.user.id == request.user.id:
+                game.name = name
+                game.price = price
+                game.url = url
+                game.description = description
+                game.save()
+            return redirect("games:inventory")
+
+def delete_game(request, game_id):
+    game = get_object_or_404(Game, pk=game_id)
+    if game.developer.user.id == request.user.id:
+        game.delete()
+    return redirect("games:inventory")
+
+
+def choose_type(request):
+    if request.method == "POST":
+        userType = request.POST['userType']
+
+        user = get_object_or_404(User, pk=request.user.id)
+
+        if userType != 'developer' and userType != 'player':
+            return render(request, "games/sociallogin.html", {"error": "Bad guy!"})
+        elif userType == 'developer':
+            developer = Developer.objects.create(user=user).save()
+            user.save()
+            with mail.get_connection() as connection:
+                mail.EmailMessage("Thanks for your registration!", "Glorious! {}".format(
+                    user.username), "hongkuan.wang@aalto.fi", [user.email], connection=connection,).send()
+            login(request, user)
+            # Developer redirect to inventory page
+            return redirect("games:inventory")
+        elif userType == 'player':
+            player = Player.objects.create(user=user, balance=100).save()
+            user.save()
+            with mail.get_connection() as connection:
+                mail.EmailMessage("Thanks for your registration!", "Glorious! {}".format(
+                    user.username), "hongkuan.wang@aalto.fi", [user.email], connection=connection,).send()
+            login(request, user)
+            return redirect("games:player_game")
+    return redirect('games:thanks')
