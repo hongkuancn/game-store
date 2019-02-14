@@ -39,6 +39,9 @@
                                 <li><a href=" {% url 'games:login' %}"><button class="btn btn-danger navbar-btn">Log In</button></a></li>
                                 <li><a href=" {% url 'games:signup' %}">Create New Account</a></li>
                             {% endif %}
+<a class="btn btn-primary" href="{% url 'social:begin' 'google-oauth2' %}">
+    Google Login
+</a>
                         </ul>
                     </li>
                 </ul>

@@ -26,6 +26,11 @@ def index(request):
     if not Label.objects.filter(type='action').exists():
         l3 = Label.objects.create(type='action').save()
 
+    if request.user.is_authenticated:
+        user = get_object_or_404(User, pk=request.user.id)
+        if not hasattr(user, 'developer') and not hasattr(user, 'player'):
+            return render(request, "games/sociallogin.html")
+
     games = Game.objects.all()
     return render(request, "games/index.html", {'game_list': games})
 
@@ -306,3 +311,31 @@ def delete_game(request, game_id):
     if game.developer.user.id == request.user.id:
         game.delete()
     return redirect("games:inventory")
+
+
+def choose_type(request):
+    if request.method == "POST":
+        userType = request.POST['userType']
+
+        user = get_object_or_404(User, pk=request.user.id)
+
+        if userType != 'developer' and userType != 'player':
+            return render(request, "games/sociallogin.html", {"error": "Bad guy!"})
+        elif userType == 'developer':
+            developer = Developer.objects.create(user=user).save()
+            user.save()
+            with mail.get_connection() as connection:
+                mail.EmailMessage("Thanks for your registration!", "Glorious! {}".format(
+                    user.username), "hongkuan.wang@aalto.fi", [user.email], connection=connection,).send()
+            login(request, user)
+            # Developer redirect to inventory page
+            return redirect("games:inventory")
+        elif userType == 'player':
+            player = Player.objects.create(user=user, balance=100).save()
+            user.save()
+            with mail.get_connection() as connection:
+                mail.EmailMessage("Thanks for your registration!", "Glorious! {}".format(
+                    user.username), "hongkuan.wang@aalto.fi", [user.email], connection=connection,).send()
+            login(request, user)
+            return redirect("games:player_game")
+    return redirect('games:thanks')
