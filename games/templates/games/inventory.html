@@ -40,7 +40,7 @@
                             <p>{{game.label}}</p>
                         </div>
                     </a>
-                    <p><a href="#">DETAILS</a></p>
+                    <p><a href="{% url 'games:game_purchase_history' game.id %}">DETAILS</a></p>
                 </div>
             </div>
             {% endfor %}

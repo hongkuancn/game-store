@@ -24,7 +24,7 @@
                     <a class="navbar-brand" href="#">2333</a>
                 </div>
                 <ul class="nav navbar-nav">
-                    <li class="active" id="current_pg"><a href="#">HOME</a></li>
+                    <li class="active" id="current_pg"><a href="{% url 'games:index' %}">HOME</a></li>
                     <li><a href="#">ABOUT</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -34,6 +34,11 @@
 
                         <ul class="dropdown-menu" id="dropdown_list">
                             {% if user.is_authenticated %}
+                                {% if user.developer %}
+                                    <li><a href=" {% url 'games:inventory' %}"><button type="submit" class="btn btn-success">Inventory</button></a></li>
+                                    {% elif user.player %}
+                                    <li><a href=" {% url 'games:player_game' %}"><button type="submit" class="btn btn-success">Bought Game</button></a></li>
+                                {% endif %}
                                 <li><a href=" {% url 'games:logout_user' %}"><button type="submit" class="btn btn-success">Log Out</button></a></li>
                             {% else %}
                                 <li><a href=" {% url 'games:login' %}"><button class="btn btn-danger navbar-btn">Log In</button></a></li>

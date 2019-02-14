@@ -74,7 +74,7 @@
                 case "ERROR":
                     alert(evt.data.info);
                     break;
-            } 
+            }
 
             function csrfSafeMethod(method) {
                 return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -87,7 +87,7 @@
                     }
                 }
             });
-            
+
             $.ajax({
                 method: "POST",
                 url: '/gaming/ajax',
@@ -103,7 +103,7 @@
                 }
             });
         });
-        
+
     });
     </script>
 {% endblock %}
