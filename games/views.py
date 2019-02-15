@@ -112,7 +112,6 @@ def game_detail(request, game_id):
     # if there is no such pid
     if not Payment.objects.filter(pid=pid).exists():
         Payment.objects.create(game=game, pid=pid).save()
-        # TODO: if payment already exists, which page to go
 
     # checksum is the value that should be used in the payment request
     return render(request, "games/gaming.html", {'pid': pid, 'sid': sid, 'amount': amount, 'checksum': checksum, "game":game})
@@ -329,18 +328,16 @@ def gaming(request):
 
     return redirect('games:index')
 
+
 def payment_success(request):
     if request.user.is_authenticated:
-        print(request.user.id)
         user = get_object_or_404(User, pk=request.user.id)
-        print(user)
         player = user.player
 
         payment = get_object_or_404(Payment, pid=request.GET.get('pid'))
         game = payment.game
 
         if BoughtGame.objects.filter(user=player, game_info=game).exists():
-            # TODO: Already bought the game
             return redirect('games:player_game')
 
         if player.balance >= game.price:
@@ -354,6 +351,7 @@ def payment_success(request):
         return redirect('games:player_game')
     else:
         return redirect('games:login')
+
 
 def modify_game(request, game_id):
     if request.method == "POST":
@@ -392,12 +390,12 @@ def choose_type(request):
         elif userType == 'developer':
             developer = Developer.objects.create(user=user).save()
             user.save()
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             # Developer redirect to inventory page
             return redirect("games:inventory")
         elif userType == 'player':
             player = Player.objects.create(user=user, balance=100).save()
             user.save()
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect("games:player_game")
     return redirect('games:thanks')
