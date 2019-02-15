@@ -14,7 +14,7 @@
         <h2>BOUGHT GAMES</h2>
         <div class="row">
             <!-- Below is one section of a game in player's bought games-->
-            <div class="col-xs-4 col-sm-4 col-lg-4 gamesec">
+            <div class="col-xs-12 col-sm-6 col-lg-4 gamesec">
                 <div class="thumbnail">
                     <a href="#" target="_blank" class="sec">
                         <img src="{% static "images/game1.jpg" %}" alt="Lights" style="width:100%">
@@ -30,7 +30,7 @@
             </div>
 
             {% for game in my_bought_game_list %}
-            <div class="col-xs-4 col-sm-4 col-lg-4 gamesec">
+            <div class="col-xs-12 col-sm-6 col-lg-4 gamesec">
                 <div class="thumbnail">
                     <img src={% static "images/game1.jpg" %} alt="Lights" style="width:100%">
                     <a href="#" class="sec">
