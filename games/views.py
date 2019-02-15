@@ -15,6 +15,7 @@ from django.template.loader import render_to_string
 from .token import account_activation_token
 from django.core.mail import EmailMessage
 
+from .models import Developer, Player, Game, BoughtGame, Label, BestScore, GameState
 from django.urls import reverse
 from .models import Developer, Player, Game, BoughtGame, Label, Payment
 from .forms import SignupForm, LoginForm, CreateNewGameForm
@@ -286,55 +287,46 @@ def gaming(request):
     response = {}
     if request.is_ajax():
         if request.method == 'POST':
-            currentUser = request.user.player
+            currentUser = request.user
             game = Game.objects.filter(pk=request.POST['id']).first()
             data = json.loads(request.POST['data'])
             messageType = data['messageType']
             if messageType == "SAVE":
-                preState = BoughtGame.objects.filter(user=currentUser, game_info=game).values('game_state').last()
-                preGamestate = preState['game_state']
-                gameState = data['gameState']
-                newState = BoughtGame(user=currentUser, game_info=game, game_state=gameState)
-                if preGamestate is None:
-                    newState.save()
-                else:
-                    BoughtGame.objects.filter(user=currentUser, game_info=game).update(game_state=gameState)   
-                response = {
-                    'messageType':"SAVE",
-                    'gameState':gameState
-                }
+                    gameState = data['gameState']
+                    currentState = GameState(user=currentUser, game=game, game_state = gameState)
+                    currentState.save()
+                    response = {
+                       'messageType':"SAVE",
+                       'gameState':gameState
+                    }
             elif messageType == "LOAD_REQUEST":
-                gameState = BoughtGame.objects.filter(user=currentUser, game_info=game).values('game_state').last()
-                state = gameState['game_state']
-                response = {
-                    'messageType':"LOAD",
-                    'gameState':state
-                }
+                    gameState = GameState.objects.filter(user=currentUser, game=game).values('game_state').last()
+                    state = gameState['game_state']
+                    response = {
+                        'messageType':"LOAD",
+                        'gameState':state
+                    }
             elif messageType == "SCORE":
-                newScore = data['score']
-                bestScore = BoughtGame.objects.filter(user=currentUser, game_info=game).values("best_score").last()
-                preScore = bestScore['best_score']
-                newBestscore = BoughtGame(user=currentUser, game_info=game, best_score=newScore)
-                if preScore is None:
+                    newScore = data['score']
+                    bestScore = BestScore.objects.filter(user=currentUser, game=game).values("score").first()
+                    newBestscore = BestScore(user=currentUser, game=game, score=newScore)
                     newBestscore.save()
-                elif newScore > preScore:
-                    BoughtGame.objects.filter(user=currentUser, game_info=game).update(best_score=newScore)
-                scoreList = BoughtGame.objects.filter(game_info=game).order_by('-best_score')[:3]
-                bestScores = ""
-                for scores in scoreList:
-                    bestScores = bestScores + "<tr><td>" + scores.user.user.username + "</td><td>" + str(scores.best_score) + "</td></tr>"
-                response = {
+                    scoreList = BestScore.objects.filter(game=game).order_by('-score')[:3]
+                    bestScores = ""
+                    for scores in scoreList:
+                        bestScores = bestScores + "<tr><td>" + scores.user.username + "</td><td>" + str(scores.score) + "</td></tr>"
+                    response = {
                         'messageType':"SCORE",
                         'bestScore': bestScores
-                }
+                    }
             elif messageType == "ERROR":
-                response = {
-                    'messageType':"ERROR",
-                    'error': "There is an error"
-                }
+                    response = {
+                        'messageType':"ERROR",
+                        'error': "There is an error"
+                    }
     return JsonResponse(response)
 
-    # return redirect('games:index')
+    return redirect('games:index')
 
 
 def payment_success(request):
