@@ -24,5 +24,7 @@ urlpatterns = [
     path('dev/inventory/<int:game_id>/update',views.modify_game, name='modify_game'),
     path('dev/inventory/<int:game_id>/delete',views.delete_game, name='delete_game'),
     path('dev/inventory/<int:game_id>/history',views.game_purchase_history, name='game_purchase_history'),
-    path('auth/social/callback', views.choose_type, name='choose_type')
+    path('auth/social/callback', views.choose_type, name='choose_type'),
+    # re_path(r'^activate/([0-9A-Za-z_\-]+)/([0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/account/$', views.activate_user_account, name='activate_user_account'),
+    re_path(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',views.activate_user_account, name='activate_user_account'),
 ]

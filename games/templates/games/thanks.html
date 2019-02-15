@@ -1,9 +1,7 @@
-{% extends "games/base.html" %}
+{% extends "games/parent.html" %}
 
 {% block content %}
-{% if user.is_authenticated %}
     <p>Hi {{ user.username }}!</p>
-{% endif %}
-<h1>Thank you!</h1>
-
+    <p>{{message}}</p>
+    <h1>Thank you!</h1>
 {% endblock content %}

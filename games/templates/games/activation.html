@@ -1,0 +1,7 @@
+{% autoescape off %}
+    Hi {{ user.username }},
+    Please click on the link to confirm your registration
+    {{domain}}
+{% url 'games:activate_user_account' uidb64=uid token=token %}
+{{ domain }}{% url 'games:activate_user_account' uidb64=uid token=token %}
+{% endautoescape %}
