@@ -25,6 +25,16 @@ def index(request):
         l2 = Label.objects.create(type='puzzle').save()
     if not Label.objects.filter(type='action').exists():
         l3 = Label.objects.create(type='action').save()
+    if not Label.objects.filter(type='sports').exists():
+        l3 = Label.objects.create(type='sports').save()
+    if not Label.objects.filter(type='racing').exists():
+        l3 = Label.objects.create(type='racing').save()
+    if not Label.objects.filter(type='strategy').exists():
+        l3 = Label.objects.create(type='strategy').save()
+    if not Label.objects.filter(type='combat').exists():
+        l3 = Label.objects.create(type='combat').save()
+    if not Label.objects.filter(type='other').exists():
+        l3 = Label.objects.create(type='other').save()
 
     if request.user.is_authenticated:
         user = get_object_or_404(User, pk=request.user.id)
