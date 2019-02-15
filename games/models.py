@@ -74,6 +74,25 @@ class Game(models.Model):
     def __str__(self):
         return self.name
 
+class GameState(models.Model):
+    """
+    user - point to User class
+    game - point to Game class
+    game_state - CharField
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='gamestate')
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='gamestate')
+    game_state = models.CharField(max_length=511, default='', unique=False)
+
+class BestScore(models.Model):
+    """
+    user - point to User class
+    game - point to Game class
+    score - FloatField
+    """
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='bestscores')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bestscores')
+    score = models.FloatField()
 
 class BoughtGame(models.Model):
     """
@@ -83,11 +102,11 @@ class BoughtGame(models.Model):
     best_score - IntegerField
     game_state - JSONField
     """
-    user = models.ForeignKey(Player, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(
+        Player, on_delete=models.CASCADE, null=True)
     game_info = models.ForeignKey(Game, on_delete=models.CASCADE)
     bought_time = models.DateTimeField(default=timezone.now)
     best_score = models.IntegerField(default=0)
-    game_state = models.CharField(max_length=511, default='', unique=False)
     price = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
     def __str__(self):
