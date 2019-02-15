@@ -2,45 +2,53 @@
 
 {% block prerequisites %}
     {% load static %}
+    <link rel="stylesheet" href="{% static "css/playersgames_layout.css" %}">
 {% endblock %}
 
 {% block content %}
-    <div class="col-xs-2 col-sm-4 col-lg-2" style="background-color:lavender;">
+<div class="row" style="background-color: #1d3e53">
+    <div class="col-xs-2 col-sm-2 col-lg-2">
     </div>
-    <div class="col-xs-8 col-sm-4 col-lg-8" style="background-color:beige;">
+    <div class="col-xs-12 col-sm-8 col-lg-8" >
+
+        <h2>BOUGHT GAMES</h2>
         <div class="row">
             <!-- Below is one section of a game in player's bought games-->
-            <div class="col-xs-4 col-sm-4 col-lg-4">
+            <div class="col-xs-4 col-sm-4 col-lg-4 gamesec">
                 <div class="thumbnail">
-                    <a href="#" target="_blank">
+                    <a href="#" target="_blank" class="sec">
                         <img src="{% static "images/game1.jpg" %}" alt="Lights" style="width:100%">
-                        <div class="caption">
+                        <div class="cap">
                             <h3>Name</h3>
                             <p>Description</p>
-                            <p>labels</p>
+                            <div class="labels">
+                                <p>labels</p>
+                            </div>
                         </div>
                     </a>
                 </div>
             </div>
 
             {% for game in my_bought_game_list %}
-            <div class="col-xs-4 col-sm-4 col-lg-4">
+            <div class="col-xs-4 col-sm-4 col-lg-4 gamesec">
                 <div class="thumbnail">
                     <img src={% static "images/game1.jpg" %} alt="Lights" style="width:100%">
-                    <a href="#">
-                        <div class="caption">
+                    <a href="#" class="sec">
+                        <div class="cap">
                             <h3>{{game.game_info.name}}</h3>
                             <p>{{ game.game_info.description | truncatechars:30 }}</p>
                             <p>{{game.price}} €</p>
                             <p>{{game.bought_time | date:"d M Y" }} </p>
                             <p>{{game.best_score }} </p>
-                            <p>{{game.game_info.label}}</p>
+                            <div class="labels">
+                                <p>{{game.game_info.label}}</p>
+                            </div>
                         </div>
                     </a>
-                    <p><a href="#">DETAILS</a></p>
                 </div>
             </div>
             {% endfor %}
         </div>
     </div>
+</div>
 {% endblock %}

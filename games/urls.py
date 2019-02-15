@@ -23,5 +23,6 @@ urlpatterns = [
     path('dev/inventory/<int:game_id>', views.show_modify_game, name='show_modify_game'),
     path('dev/inventory/<int:game_id>/update',views.modify_game, name='modify_game'),
     path('dev/inventory/<int:game_id>/delete',views.delete_game, name='delete_game'),
+    path('dev/inventory/<int:game_id>/history',views.game_purchase_history, name='game_purchase_history'),
     path('auth/social/callback', views.choose_type, name='choose_type')
 ]

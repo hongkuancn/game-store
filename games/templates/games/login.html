@@ -1,14 +1,21 @@
 {% extends "games/parent.html" %}
 
+{% block prerequisites %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static "css/login_layout.css" %}">
+{% endblock %}
+
 {% block content %}
-<form class="container" action="{% url 'games:log_user_in' %}" method="post">
+    <div class="content">
+        <form class="container" action="{% url 'games:log_user_in' %}" method="post" id="form">
 
-    <div class="text-danger" role="alert">
-        {{ error }}
+            <div class="text-danger" role="alert">
+                {{ error }}
+            </div>
+
+            {% csrf_token %}
+            {{ form }}
+            <button type="submit" class="btn">Login</button>
+        </form>
     </div>
-
-    {% csrf_token %}
-    {{ form }}
-    <button type="submit" class="btn btn-primary">Login</button>
-</form>
 {% endblock content %}
