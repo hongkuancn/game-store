@@ -7,16 +7,16 @@
 {% endblock %}
 
 {% block content %}
-<div class="row" style="background-color: #1d3e53">
-    <div class="col-xs-0 col-sm-4 col-lg-2">
+<div class="row" style="background-color: #1d3e53;margin-right: 0px;margin-left: 0px;">
+    <div class="col-xs-0 col-sm-2 col-lg-2">
     </div>
-    <div class="col-xs-12 col-sm-4 col-lg-8">
+    <div class="col-xs-12 col-sm-8 col-lg-8">
 
         <h2>INVENTORY</h2>
         <div class="row">
 
             <!-- Below is one section of a game in inventory-->
-            <div class="col-xs-12 col-sm-6 col-lg-4 gamesec">
+            <div class="col-xs-12 col-sm-4 col-lg-4 gamesec">
                 <div class="thumbnail">
                     <!-- TODO: add individual info -->
                     <img src={% static "images/game1.jpg" %} alt="Lights" style="width:100%">
@@ -37,7 +37,7 @@
             </div>
 
             {% for game in my_game_list %}
-            <div class="col-xs-12 col-sm-6 col-lg-4 gamesec">
+            <div class="col-xs-12 col-sm-4 col-lg-4 gamesec">
                 <div class="thumbnail">
                     <!-- TODO: add individual info -->
                     <img src={% static "images/game1.jpg" %} alt="Lights" style="width:100%">
@@ -58,11 +58,12 @@
             </div>
             {% endfor %}
 
-            <div class="col-xs-12 col-sm-6 col-lg-4 gamesec">
+            <div class="col-xs-12 col-sm-4 col-lg-4 gamesec">
                 <div class="thumbnail add">
                     <p style="margin-bottom: 9.2vw"></p>
                     <form action="{% url 'games:newgame_page' %}" style="width: 50%; margin-left: auto; margin-right: auto">
-                        <button class="btn" style="height: 130px; width: 100%; font-size: 18px">ADD A GAME</button>
+                        <button class="btn" style="height: 130px; width: 100%; font-size: 18px;
+                        overflow: hidden;text-overflow:ellipsis;white-space: nowrap;">ADD A GAME</button>
                     </form>
                     <p style="margin-bottom: 9.1vw"></p>
                 </div>
