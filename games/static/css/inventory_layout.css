@@ -1,0 +1,16 @@
+body{
+    overflow-x:hidden;
+}
+.details p{
+    font-size: 18px;
+    font-style: normal;
+    text-decoration: underline;
+    color: #77abb7;
+}
+.details{
+    margin-bottom: 5px;
+}
+.gamesec .thumbnail{
+    height: 100%;
+}
+
