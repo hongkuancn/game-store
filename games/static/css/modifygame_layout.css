@@ -1,0 +1,11 @@
+#form .container{
+    width: 100%;
+}
+#delete{
+    padding-right: 0px;
+    padding-left: 0px;
+}
+#delete>.btn{
+    background-color: #913535;
+    margin-top: 10px;
+}
