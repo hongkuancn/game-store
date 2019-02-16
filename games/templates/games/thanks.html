@@ -1,7 +1,17 @@
 {% extends "games/parent.html" %}
 
+{% block prerequisites %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static "css/thanks_layout.css" %}">
+{% endblock %}
+
 {% block content %}
-    <p>Hi {{ user.username }}!</p>
-    <p>{{message}}</p>
-    <h1>Thank you!</h1>
+    <div class="bg">
+        <div class="content">
+            <p>(๑•́ ∀ •̀๑) </p>
+            <p>Hi {{ user.username }}!</p>
+            <p>{{message}}</p>
+            <h1>Thank you!</h1>
+        </div>
+    </div>
 {% endblock content %}

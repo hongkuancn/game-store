@@ -1,0 +1,18 @@
+.content{
+    width: 30%;
+    min-width: 240px;
+    padding-top: 8vw;
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+    color: #b9c0d5;
+    font-family: Futura;
+}
+.content p{
+    font-size: 18px;
+}
+.bg{
+    background-color: #1d3e53;
+    width: auto;
+    min-height: 100vmax;
+}
