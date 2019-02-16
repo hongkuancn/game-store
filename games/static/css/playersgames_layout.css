@@ -39,8 +39,10 @@
     border: none;
 }
 
-.gamesec .sec:hover{
+.gamesec .thumbnail:hover{
     background-color: #77abb7;
+}
+.gamesec .sec:hover{
     color: #254b62;
     text-decoration: none;
 }
