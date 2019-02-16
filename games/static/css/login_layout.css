@@ -16,7 +16,7 @@
 }
 #form *{
     padding: 5px;
-    font-family: "Verdana";
+    font-family: "Verdana", Tahoma, "Segoe Print";
 }
 #form .btn{
     margin-top: 20px;
