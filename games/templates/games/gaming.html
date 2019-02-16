@@ -70,8 +70,11 @@
             console.log(JSON.stringify(evt.data));
             switch(evt.data.messageType) {
                 case "SETTING":
-                    iframe.style.width = evt.data.options.width+"px";
-                    iframe.style.height = evt.data.options.height+"px";
+                    if ( iframe.offsetWidth > evt.data.options.width)
+                    {
+                        iframe.style.width = evt.data.options.width+"px";
+                        iframe.style.height = evt.data.options.height+"px";
+                    }
                     break;
                 case "ERROR":
                     alert(evt.data.info);
