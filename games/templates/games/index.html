@@ -7,7 +7,7 @@
 
 
 {% block content %}
-<div class="row" style="background-color: #1d3e53; margin-left: 0px; margin-right: 0px;">
+<div class="row" style="background-color: #1d3e53; margin-left: 0px; margin-right: 0px; min-height: 100vmax">
     <div class="col-xs-12 col-sm-2 col-lg-2">
 
         <div class="row">
@@ -45,10 +45,10 @@
                     <img src="{% static "images/game1.jpg" %}" alt="First slide">
                 </div>
                 <div class="item">
-                    <img src="{% static "images/game2.jpg" %}" alt="Second slide">
+                    <img src="{% static "images/game3.jpg" %}" alt="Second slide">
                 </div>
                 <div class="item">
-                    <img src="{% static "images/game3.jpg" %}" alt="Third slide">
+                    <img src="{% static "images/game2.jpg" %}" alt="Third slide">
                 </div>
             </div>
 
@@ -70,7 +70,7 @@
             <div class="col-xs-12 col-sm-6 col-lg-4 gamesec">
                 <div class="thumbnail">
                     <a href="#" class="sec">
-                        <img src="{% static "images/game3.jpg" %}" alt="Lights" style="width:100%">
+                        <img src="{% static "images/game2.jpg" %}" alt="Lights" style="width:100%">
                         <div class="cap">
                             <h3>GAME1</h3>
                             <p>Description</p>
@@ -87,7 +87,7 @@
             <div class="col-xs-12 col-sm-6 col-lg-4 gamesec">
                 <div class="thumbnail">
                         <a href=" {% url 'games:game_detail' game.id %}" class="sec">
-                        <img src="{% static 'images/game3.jpg' %}" alt="Lights" style="width:100%">
+                        <img src="{% static 'images/game2.jpg' %}" alt="Lights" style="width:100%">
                         <div class="cap">
                             <h3>{{game.name}}</h3>
                             <p>{{ game.description | truncatechars:30 }}</p>

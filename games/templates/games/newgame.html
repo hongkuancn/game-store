@@ -1,41 +1,48 @@
 {% extends "games/parent.html" %}
 
+{% block prerequisites %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static "css/login_layout.css" %}">
+    <link rel="stylesheet" href="{% static "css/newgame_layout.css" %}">
+{% endblock %}
+
 {% block content %}
+<div class="content">
+    <form class="container" action="{% url 'games:create_new_game' %}" method="post" id="form">
 
-<form class="container" action="{% url 'games:create_new_game' %}" method="post">
+        <div class="text-danger" role="alert">
+            {{ error }}
+        </div>
 
-    <div class="text-danger" role="alert">
-        {{ error }}
-    </div>
-
-    {% csrf_token %}
-    {{ form }}
-    <div>
-        <label class="radio-inline">
-            <input type="radio" name="label" value="adventure">Adventure
-        </label>
-        <label class="radio-inline">
-            <input type="radio" name="label" value="action">Action
-        </label>
-        <label class="radio-inline">
-            <input type="radio" name="label" value="combat">Combat
-        </label>
-        <label class="radio-inline">
-            <input type="radio" name="label" value="puzzle">Puzzle
-        </label>
-        <label class="radio-inline">
-            <input type="radio" name="label" value="racing">Racing
-        </label>
-        <label class="radio-inline">
-            <input type="radio" name="label" value="sports">Sports
-        </label>
-        <label class="radio-inline">
-            <input type="radio" name="label" value="strategy">Strategy
-        </label>
-        <label class="radio-inline">
-            <input type="radio" name="label" value="other">Other
-        </label>
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+        {% csrf_token %}
+        {{ form }}
+        <div class="labels">
+            <label class="radio-inline" style="margin-left: 10px">
+                <input type="radio" name="label" value="adventure">Adventure
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="label" value="action">Action
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="label" value="combat">Combat
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="label" value="puzzle">Puzzle
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="label" value="racing">Racing
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="label" value="sports">Sports
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="label" value="strategy">Strategy
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="label" value="other">Other
+            </label>
+        </div>
+        <button type="submit" class="btn">Submit</button>
+    </form>
+</div>
 {% endblock content %}

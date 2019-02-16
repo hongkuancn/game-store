@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row" style="background-color: #1d3e53; margin-left: 0px; margin-right: 0px; min-height: 150vmin;">
+    <div class="row" style="background-color: #1d3e53; margin-left: 0px; margin-right: 0px; min-height: 100vmax;">
         <div class="col-xs-2 col-sm-2 col-lg-2" >
         </div>
         <div class="col-xs-12 col-sm-8 col-lg-8" >
@@ -18,7 +18,7 @@
                 <div class="col-xs-6 col-sm-6 col-lg-3">
                     <!-- TODO: add price to the button -->
                     <!-- <button class="btn btn-danger navbar-btn">Buy $</button> -->
-                    <form action="http://payments.webcourse.niksula.hut.fi/pay/" method="POST">
+                    <form action="http://payments.webcourse.niksula.hut.fi/pay/" method="POST" id="buy">
                         <input type="hidden" name="pid" value={{pid}} />
                         <input type="hidden" name="sid" value={{sid}} />
                         <input type="hidden" name="success_url" value="http://localhost:8000/payment/success" />
@@ -26,9 +26,9 @@
                         <input type="hidden" name="error_url" value="http://localhost:8000/payment/error" />
                         <input type="hidden" name="checksum" value={{checksum}} />
 
-                        <label for="id_amount">Amount</label>
-                        <input type="text" id="id_amount" name="amount" value={{amount}} />
-                        <input type="submit" value="Buy" />
+                        <label for="id_amount"></label>
+                        <input type="hidden" id="id_amount" name="amount" value={{amount}} />
+                        <input type="submit" value="Buy for {{amount}}€" class="btn"/>
                     </form>
                 </div>
             </div>
@@ -70,8 +70,11 @@
             console.log(JSON.stringify(evt.data));
             switch(evt.data.messageType) {
                 case "SETTING":
-                    iframe.style.width = evt.data.options.width+"px";
-                    iframe.style.height = evt.data.options.height+"px";
+                    if ( iframe.offsetWidth > evt.data.options.width)
+                    {
+                        iframe.style.width = evt.data.options.width+"px";
+                        iframe.style.height = evt.data.options.height+"px";
+                    }
                     break;
                 case "ERROR":
                     alert(evt.data.info);

@@ -13,6 +13,7 @@
     <!--link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <title>2333</title>
+    <link rel="shortcut icon" href="{% static "images/favicon.ico" %}" type="image/x-icon" />
 </head>
 
 <body>
@@ -36,9 +37,9 @@
                         <ul class="dropdown-menu" id="dropdown_list">
                             {% if user.is_authenticated %}
                                 {% if user.developer %}
-                                    <li><a href=" {% url 'games:inventory' %}"><button type="submit" class="btn btn-success">Inventory</button></a></li>
+                                    <li><a href=" {% url 'games:inventory' %}"><button type="submit" class="btn">Inventory</button></a></li>
                                 {% elif user.player %}
-                                    <li><a href=" {% url 'games:player_game' %}"><button type="submit" class="btn btn-success">Bought Game</button></a></li>
+                                    <li><a href=" {% url 'games:player_game' %}"><button type="submit" class="btn">Bought Game</button></a></li>
                                 {% endif %}
                                 <li><a href=" {% url 'games:logout_user' %}"><button type="submit" class="btn">Log Out</button></a></li>
                             {% else %}
