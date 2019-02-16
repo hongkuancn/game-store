@@ -4,12 +4,17 @@ from django.db.models import F
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.contrib.auth.models import User
-from django.core import mail
 from django.http import HttpResponse, Http404
 import json
 from django.http import JsonResponse
 
-from .models import Developer, Player, Game, BoughtGame, Label, BestScore, GameState
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template.loader import render_to_string
+from .token import account_activation_token
+from django.core.mail import EmailMessage
+
 from django.urls import reverse
 from .models import Developer, Player, Game, BoughtGame, Label, Payment
 from .forms import SignupForm, LoginForm, CreateNewGameForm
@@ -18,13 +23,22 @@ from .forms import SignupForm, LoginForm, CreateNewGameForm
 GET handlers
 """
 def index(request):
-    # TODO: where to initial the three instances
     if not Label.objects.filter(type='adventure').exists():
         l1 = Label.objects.create(type='adventure').save()
     if not Label.objects.filter(type='puzzle').exists():
         l2 = Label.objects.create(type='puzzle').save()
     if not Label.objects.filter(type='action').exists():
         l3 = Label.objects.create(type='action').save()
+    if not Label.objects.filter(type='sports').exists():
+        l3 = Label.objects.create(type='sports').save()
+    if not Label.objects.filter(type='racing').exists():
+        l3 = Label.objects.create(type='racing').save()
+    if not Label.objects.filter(type='strategy').exists():
+        l3 = Label.objects.create(type='strategy').save()
+    if not Label.objects.filter(type='combat').exists():
+        l3 = Label.objects.create(type='combat').save()
+    if not Label.objects.filter(type='other').exists():
+        l3 = Label.objects.create(type='other').save()
 
     if request.user.is_authenticated:
         user = get_object_or_404(User, pk=request.user.id)
@@ -57,15 +71,18 @@ def newgame_page(request):
     form = CreateNewGameForm()
     return render(request, "games/newgame.html", {'form': form})
 
+
 def logout_user(request):
     logout(request)
     return redirect('games:index')
+
 
 def inventory(request):
     user = get_object_or_404(User, pk=request.user.id)
     if user.developer:
         my_game_list = user.developer.developedgames.all()
         return render(request, "games/inventory.html", {'my_game_list': my_game_list})
+
 
 def game_detail(request, game_id):
 
@@ -94,10 +111,10 @@ def game_detail(request, game_id):
     # if there is no such pid
     if not Payment.objects.filter(pid=pid).exists():
         Payment.objects.create(game=game, pid=pid).save()
-        # TODO: if payment already exists, which page to go
 
     # checksum is the value that should be used in the payment request
     return render(request, "games/gaming.html", {'pid': pid, 'sid': sid, 'amount': amount, 'checksum': checksum, "game":game})
+
 
 def player_game(request):
     if request.user.is_authenticated:
@@ -106,11 +123,14 @@ def player_game(request):
             my_bought_game_list = user.player.boughtgame_set.all()
             return render(request, 'games/playersgames.html', {'my_bought_game_list': my_bought_game_list})
 
+
 def payment_error(request):
     return render(request, "games/signup.html",)
 
+
 def payment_cancel(request):
     return render(request, "games/login.html",)
+
 
 def show_modify_game(request, game_id):
     game = get_object_or_404(Game, pk=game_id)
@@ -123,11 +143,28 @@ def show_modify_game(request, game_id):
         return render(request, "games/modifygame.html", {'form': form, 'id': game_id})
     return redirect("games:index")
 
+
 def game_purchase_history(request, game_id):
     game = get_object_or_404(Game, pk=game_id)
     if game.developer.user.id == request.user.id:
         game_history = get_list_or_404(BoughtGame, game_info=game)
     return render(request, 'games/statistics.html', {'game_history': game_history})
+
+
+def activate_user_account(request, uidb64=None, token=None):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+
+        return render(request, "games/thanks.html", { 'message': 'Thank you for your email confirmation. Now you can login your account.'})
+    else:
+        return render(request, "games/thanks.html", {'message': 'Activation link is invalid!'})
 
 """
 POST handlers
@@ -145,7 +182,6 @@ def signup_user(request):
             if password != password_confirmation:
                 newForm = SignupForm()
                 return render(request, "games/signup.html", {"error": "Username exists", "form": newForm})
-                # reverse("games:signup")
             if User.objects.filter(email=email).exists():
                 newForm = SignupForm()
                 return render(request, "games/signup.html", {"error": "Email exists", "form": newForm})
@@ -158,25 +194,44 @@ def signup_user(request):
             elif userType == 'developer':
                 user = User.objects.create_user(username=username, email=email, password=password)
                 developer = Developer.objects.create(user=user).save()
+                user.is_active = False
                 user.save()
-                with mail.get_connection() as connection:
-                    mail.EmailMessage("Thanks for your registration!", "Glorious! {}".format(username), "hongkuan.wang@aalto.fi", [email], connection=connection,).send()
-                login(request, user,
-                      backend='django.contrib.auth.backends.ModelBackend')
-                # Developer redirect to inventory page
-                return redirect("games:inventory")
+
+                # Send confirmation Email
+                current_site = get_current_site(request)
+                mail_subject = 'Activate your game account.'
+                message = render_to_string('games/activation.html', {
+                    'user': user,
+                    'domain': current_site.domain[:-1],
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+                    'token': account_activation_token.make_token(user),
+                })
+                email = EmailMessage(mail_subject, message, to=[user.email])
+                email.send()
+
+                return render(request, "games/thanks.html", {'message': 'Please confirm your email address to complete the registration'})
             elif userType == 'player':
                 user = User.objects.create_user(
                     username=username, email=email, password=password)
                 player = Player.objects.create(user=user, balance=100).save()
+                user.is_active = False
                 user.save()
-                with mail.get_connection() as connection:
-                    mail.EmailMessage("Thanks for your registration!", "Glorious! {}".format(
-                        username), "hongkuan.wang@aalto.fi", [email], connection=connection,).send()
-                login(request, user,
-                      backend='django.contrib.auth.backends.ModelBackend')
-                return redirect("games:player_game")
+
+                # Send confirmation Email
+                current_site = get_current_site(request)
+                mail_subject = 'Activate your game account.'
+                message = render_to_string('games/activation.html', {
+                    'user': user,
+                    'domain': current_site.domain[:-1],
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+                    'token': account_activation_token.make_token(user),
+                })
+                email = EmailMessage(mail_subject, message, to=[user.email])
+                email.send()
+
+                return render(request, "games/thanks.html", {'message': 'Please confirm your email address to complete the registration'})
     return redirect('games:index')
+
 
 def log_user_in(request):
     if request.method == "POST":
@@ -190,13 +245,14 @@ def log_user_in(request):
                 newForm = LoginForm()
                 return render(request, "games/login.html", {"error": "User doesn't exists", "form": newForm})
             else:
-                login(request, user)
+                login(request, user,
+                      backend='django.contrib.auth.backends.ModelBackend')
                 if hasattr(user, 'developer'):
-                    # Developer redirect to inventory page
                     return redirect("games:inventory")
                 elif hasattr(user, 'player'):
                     return redirect("games:player_game")
     return redirect('games:index')
+
 
 def create_new_game(request):
     if request.method == "POST":
@@ -225,63 +281,71 @@ def create_new_game(request):
                 return render(request, "games/newgame.html", {"error": "Required field should be filled", "form": newForm})
     return redirect("games:inventory")
 
+
 def gaming(request):
     response = {}
     if request.is_ajax():
         if request.method == 'POST':
-            currentUser = request.user
+            currentUser = request.user.player
             game = Game.objects.filter(pk=request.POST['id']).first()
             data = json.loads(request.POST['data'])
             messageType = data['messageType']
             if messageType == "SAVE":
-                    gameState = data['gameState']
-                    currentState = GameState(user=currentUser, game=game, game_state = gameState)
-                    currentState.save()
-                    response = {
-                       'messageType':"SAVE",
-                       'gameState':gameState
-                    }
+                preState = BoughtGame.objects.filter(user=currentUser, game_info=game).values('game_state').last()
+                preGamestate = preState['game_state']
+                gameState = data['gameState']
+                newState = BoughtGame(user=currentUser, game_info=game, game_state=gameState)
+                if preGamestate is None:
+                    newState.save()
+                else:
+                    BoughtGame.objects.filter(user=currentUser, game_info=game).update(game_state=gameState)   
+                response = {
+                    'messageType':"SAVE",
+                    'gameState':gameState
+                }
             elif messageType == "LOAD_REQUEST":
-                    gameState = GameState.objects.filter(user=currentUser, game=game).values('game_state').last()
-                    state = gameState['game_state']
-                    response = {
-                        'messageType':"LOAD",
-                        'gameState':state
-                    }
+                gameState = BoughtGame.objects.filter(user=currentUser, game_info=game).values('game_state').last()
+                state = gameState['game_state']
+                response = {
+                    'messageType':"LOAD",
+                    'gameState':state
+                }
             elif messageType == "SCORE":
-                    newScore = data['score']
-                    bestScore = BestScore.objects.filter(user=currentUser, game=game).values("score").first()
-                    newBestscore = BestScore(user=currentUser, game=game, score=newScore)
+                newScore = data['score']
+                bestScore = BoughtGame.objects.filter(user=currentUser, game_info=game).values("best_score").last()
+                preScore = bestScore['best_score']
+                newBestscore = BoughtGame(user=currentUser, game_info=game, best_score=newScore)
+                if preScore is None:
                     newBestscore.save()
-                    scoreList = BestScore.objects.filter(game=game).order_by('-score')[:3]
-                    bestScores = ""
-                    for scores in scoreList:
-                        bestScores = bestScores + "<tr><td>" + scores.user.username + "</td><td>" + str(scores.score) + "</td></tr>"
-                    response = {
+                elif newScore > preScore:
+                    BoughtGame.objects.filter(user=currentUser, game_info=game).update(best_score=newScore)
+                scoreList = BoughtGame.objects.filter(game_info=game).order_by('-best_score')[:3]
+                bestScores = ""
+                for scores in scoreList:
+                    bestScores = bestScores + "<tr><td>" + scores.user.user.username + "</td><td>" + str(scores.best_score) + "</td></tr>"
+                response = {
                         'messageType':"SCORE",
                         'bestScore': bestScores
-                    }
+                }
             elif messageType == "ERROR":
-                    response = {
-                        'messageType':"ERROR",
-                        'error': "There is an error"
-                    }
+                response = {
+                    'messageType':"ERROR",
+                    'error': "There is an error"
+                }
     return JsonResponse(response)
 
-    return redirect('games:index')
+    # return redirect('games:index')
+
 
 def payment_success(request):
     if request.user.is_authenticated:
-        print(request.user.id)
         user = get_object_or_404(User, pk=request.user.id)
-        print(user)
         player = user.player
 
         payment = get_object_or_404(Payment, pid=request.GET.get('pid'))
         game = payment.game
 
         if BoughtGame.objects.filter(user=player, game_info=game).exists():
-            # TODO: Already bought the game
             return redirect('games:player_game')
 
         if player.balance >= game.price:
@@ -295,6 +359,7 @@ def payment_success(request):
         return redirect('games:player_game')
     else:
         return redirect('games:login')
+
 
 def modify_game(request, game_id):
     if request.method == "POST":
@@ -314,6 +379,7 @@ def modify_game(request, game_id):
                 game.save()
             return redirect("games:inventory")
 
+
 def delete_game(request, game_id):
     game = get_object_or_404(Game, pk=game_id)
     if game.developer.user.id == request.user.id:
@@ -332,18 +398,12 @@ def choose_type(request):
         elif userType == 'developer':
             developer = Developer.objects.create(user=user).save()
             user.save()
-            with mail.get_connection() as connection:
-                mail.EmailMessage("Thanks for your registration!", "Glorious! {}".format(
-                    user.username), "hongkuan.wang@aalto.fi", [user.email], connection=connection,).send()
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             # Developer redirect to inventory page
             return redirect("games:inventory")
         elif userType == 'player':
             player = Player.objects.create(user=user, balance=100).save()
             user.save()
-            with mail.get_connection() as connection:
-                mail.EmailMessage("Thanks for your registration!", "Glorious! {}".format(
-                    user.username), "hongkuan.wang@aalto.fi", [user.email], connection=connection,).send()
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect("games:player_game")
     return redirect('games:thanks')

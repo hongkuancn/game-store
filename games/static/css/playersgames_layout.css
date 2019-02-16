@@ -11,7 +11,7 @@
     color: #b9c0d5;
 }
 .row h3{
-    font-size: 2vw;
+    font-size: 25px;
     font-family: Futura;
     margin: 1vw;
     /*color: #77abb7;*/
@@ -32,9 +32,7 @@
     background-color: #254b62;
     border: none;
 }
-.gamesec .thumbnail:hover{
-    background-color: #77abb7;
-}
+
 .gamesec .sec{
     background-color: #254b62;
     color: #77abb7;
