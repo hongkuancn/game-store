@@ -26,6 +26,8 @@
                         <input type="hidden" name="error_url" value="http://localhost:8000/payment/error" />
                         <input type="hidden" name="checksum" value={{checksum}} />
 
+                        <label for="id_amount"></label>
+                        <input type="hidden" id="id_amount" name="amount" value={{amount}} />
                         <input type="submit" value="Buy for {{amount}}€" class="btn"/>
                     </form>
                 </div>
