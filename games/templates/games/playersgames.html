@@ -14,40 +14,33 @@
         <h2>BOUGHT GAMES</h2>
         <div class="row">
             <!-- Below is one section of a game in player's bought games-->
-            <div class="col-xs-12 col-sm-6 col-lg-4 gamesec">
-                <div class="thumbnail">
-                    <a href="#" target="_blank" class="sec">
-                        <img src="{% static "images/game1.jpg" %}" alt="Lights" style="width:100%">
-                        <div class="cap">
-                            <h3>Name</h3>
-                            <p>Description</p>
-                            <div class="labels">
-                                <p>labels</p>
+            {% if my_bought_game_list%}
+                {% for boughtgame in my_bought_game_list %}
+                <div class="col-xs-12 col-sm-6 col-lg-4 gamesec">
+                    <div class="thumbnail">
+                        {% if boughtgame.game_info.game_profile_picture %}
+                            <img src="{{boughtgame.game_info.game_profile_picture}}" alt="Lights" style="width:100%">
+                        {% else %}
+                            <img src="{% static 'images/game2.jpg' %}" alt="Lights" style="width:100%">
+                        {% endif %}
+                        <a href="{% url 'games:game_detail' boughtgame.game_info.id %}" class="sec">
+                            <div class="cap">
+                                <h3>{{boughtgame.game_info.name}}</h3>
+                                <p>{{ boughtgame.game_info.description | truncatechars:30 }}</p>
+                                <p>{{boughtgame.price}} €</p>
+                                <p>{{boughtgame.bought_time | date:"d M Y" }} </p>
+                                <p>{{boughtgame.best_score }} </p>
+                                <div class="labels">
+                                    <p>{{boughtgame.game_info.label}}</p>
+                                </div>
                             </div>
-                        </div>
-                    </a>
+                        </a>
+                    </div>
                 </div>
-            </div>
-
-            {% for game in my_bought_game_list %}
-            <div class="col-xs-12 col-sm-6 col-lg-4 gamesec">
-                <div class="thumbnail">
-                    <img src={% static "images/game1.jpg" %} alt="Lights" style="width:100%">
-                    <a href="#" class="sec">
-                        <div class="cap">
-                            <h3>{{game.game_info.name}}</h3>
-                            <p>{{ game.game_info.description | truncatechars:30 }}</p>
-                            <p>{{game.price}} €</p>
-                            <p>{{game.bought_time | date:"d M Y" }} </p>
-                            <p>{{game.best_score }} </p>
-                            <div class="labels">
-                                <p>{{game.game_info.label}}</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            {% endfor %}
+                {% endfor %}
+            {% else %}
+                <h2>Buy your first game!</h2>
+            {% endif %}
         </div>
     </div>
 </div>

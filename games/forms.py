@@ -29,8 +29,8 @@ class CreateNewGameForm(forms.Form):
     name = forms.CharField(label='Name', max_length=100)
     price = forms.FloatField(label='Price')
     url = forms.URLField(label="URL Link")
+    game_picture = forms.URLField(label="Game Picture")
     description = forms.CharField()
-    # image = forms.ImageField()
 
     def __init__(self, *args, **kwargs):
         super(CreateNewGameForm, self).__init__(*args, **kwargs)
