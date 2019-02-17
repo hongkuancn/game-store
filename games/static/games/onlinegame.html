@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html >
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>TRY TO GUEST!</title>
+<!-- <script src="//code.jquery.com/jquery-1.11.1.min.js"></script> -->
+<body>
+
+    <h2>You Only Have Ten Chances</h2>
+    <p></p>
+   
+    <p>Please input your number:</p>
+	<input type="text" name="input" id="input" placeholder="Input number between 0-20"/>
+    <button id="submit">Submit</button>
+    <button id="restart">Restart</button>
+
+    
+    <p id="hints"></p>
+    <p>You can save your state</p>
+    <button id="save">Save</button>
+    <button id="load">Load</button>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+//generate a random number
+var playerItem = new Array(2);
+var isClick = false;
+var count;
+var score;
+var num;
+var hints;
+var submit = document.getElementById("submit");
+var restart = document.getElementById("restart");
+
+num = Math.floor(Math.random()*21);
+count =1;
+
+restart.addEventListener("click", Restart)
+function Restart(){
+    if(submit.disabled==false){
+        var con = confirm("You can still play, are you sure you want to restart the game?");
+        if(con==true){
+            num = Math.floor(Math.random()*21);
+            count=1;
+            document.getElementById("input").value = "";
+            document.getElementById('hints').innerHTML = "";
+        }
+    }
+    else{
+        num = Math.floor(Math.random()*21);
+        submit.disabled == false;
+        count = 1;
+    }
+}
+
+if(count<=10){
+    submit.addEventListener("click", myFunction);
+    function myFunction(){
+        var inNum = document.getElementById("input").value;
+		var restCount = 10 - count;
+            if(inNum > num){
+                hints = inNum+" is bigger, You have "+restCount+" times left.";		  
+		        document.getElementById('hints').innerHTML = hints;
+			    playerItem.push(count);
+                playerItem.push(hints);
+                count++;
+		    }
+            if(inNum<num){  
+                hints = inNum+" is smaller, You have "+restCount+" times left.";
+                document.getElementById('hints').innerHTML = hints;
+                playerItem.push(count);
+                playerItem.push(hints);
+			    count++; 
+		    }
+            if(inNum==num){   
+			    score = (restCount+1)*10;
+                hints = "Great! You are right! You got "+score+" scores!";
+                document.getElementById('hints').innerHTML = hints;
+                submit.disabled = true;
+                playerItem.push(count);
+                playerItem.push(hints);
+		        var msg = {
+                    "messageType": "SCORE",
+                    "score": score
+                };
+                window.parent.postMessage(msg, "*"); 
+            }
+                        
+    }
+    
+}		  
+if(count>10){
+    document.getElementById('hints').innerHTML = "Sorry, you run out of times"; 
+    score =  0;
+    playerItem.push(count);
+    playerItem.push(hints);
+    submit.disabled=true;
+}   		
+
+document.getElementById("save").addEventListener("click", Save);
+function Save(){
+    var msg = {
+        "messageType": "SAVE",
+        "gameState": {
+          "playerItems": playerItem,
+          "score": score
+        }
+    };
+    window.parent.postMessage(msg, "*");
+}
+
+document.getElementById("Load").addEventListener("click", Load);
+function Load(){
+    var msg = {
+        "messageType": "LOAD_REQUEST",
+    };
+    window.parent.postMessage(msg, "*");
+}
+
+window.addEventListener("message", function(evt) {
+    if(evt.data.messageType === "LOAD") {
+        playerItem = evt.data.gameState.playerItem;
+        score = evt.data.gameState.score;
+        update();
+    } else if (evt.data.messageType === "ERROR") {
+        alert(evt.data.info);
+    }
+});
+
+function update(){
+    document.getElementById('hints').innerHTML = playerItem[1];
+    count = playerItem[0];
+}
+
+var message =  {
+    messageType: "SETTING",
+    options: {
+        "width": 700, //Integer
+        "height": 300 //Integer
+    }
+};
+window.parent.postMessage(message, "*");
+
+</script> 
+</body>
+</html>
