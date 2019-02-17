@@ -67,27 +67,16 @@
             <h2>OFFERS</h2>
 
             <!-- Below is one section of a game in game list-->
-            <div class="col-xs-12 col-sm-6 col-lg-4 gamesec">
-                <div class="thumbnail">
-                    <a href="#" class="sec">
-                        <img src="{% static "images/game2.jpg" %}" alt="Lights" style="width:100%">
-                        <div class="cap">
-                            <h3>GAME1</h3>
-                            <p>Description</p>
-                            <div class="price">
-                                <p>Price</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
             {% for game in game_list %}
 
             <div class="col-xs-12 col-sm-6 col-lg-4 gamesec">
                 <div class="thumbnail">
                         <a href=" {% url 'games:game_detail' game.id %}" class="sec">
-                        <img src="{% static 'images/game2.jpg' %}" alt="Lights" style="width:100%">
+                        {% if game.game_profile_picture %}
+                            <img src="{{game.game_profile_picture}}" alt="Lights" style="width:100%">
+                        {% else %}
+                            <img src="{% static 'images/game2.jpg' %}" alt="Lights" style="width:100%">
+                        {% endif %}
                         <div class="cap">
                             <h3>{{game.name}}</h3>
                             <p>{{ game.description | truncatechars:30 }}</p>

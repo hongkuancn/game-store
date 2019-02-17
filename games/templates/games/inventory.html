@@ -16,31 +16,15 @@
         <div class="row">
 
             <!-- Below is one section of a game in inventory-->
-            <div class="col-xs-12 col-sm-4 col-lg-4 gamesec">
-                <div class="thumbnail">
-                    <!-- TODO: add individual info -->
-                    <img src={% static "images/game1.jpg" %} alt="Lights" style="width:100%">
-                    <a href="#" class="sec">
-                        <div class="cap">
-                            <h3>Name</h3>
-                            <p>Description</p>
-                            <p>Price</p>
-                            <div class="labels">
-                                <p>labels</p>
-                            </div>
-                            <div class="details">
-                                <p><a href="#" class="text-info">DETAILS</a></p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
 
             {% for game in my_game_list %}
             <div class="col-xs-12 col-sm-4 col-lg-4 gamesec">
                 <div class="thumbnail">
-                    <!-- TODO: add individual info -->
-                    <img src={% static "images/game1.jpg" %} alt="Lights" style="width:100%">
+                    {% if game.game_profile_picture %}
+                        <img src="{{game.game_profile_picture}}" alt="Lights" style="width:100%">
+                    {% else %}
+                        <img src="{% static 'images/game2.jpg' %}" alt="Lights" style="width:100%">
+                    {% endif %}
                     <a href="{% url 'games:show_modify_game' game.id %}" class="sec">
                         <div class="cap">
                             <h3>{{game.name}}</h3>

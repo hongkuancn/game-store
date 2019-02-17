@@ -79,14 +79,22 @@ def logout_user(request):
 
 def inventory(request):
     user = get_object_or_404(User, pk=request.user.id)
-    if user.developer:
+    if hasattr(user, 'developer'):
         my_game_list = user.developer.developedgames.all()
         return render(request, "games/inventory.html", {'my_game_list': my_game_list})
+    else:
+        return redirect('games:index')
 
 
 def game_detail(request, game_id):
 
     game = get_object_or_404(Game, pk=game_id)
+    bought = False
+    if request.user.is_authenticated:
+        user = get_object_or_404(User, pk=request.user.id)
+        if hasattr(user, 'player'):
+            if BoughtGame.objects.filter(user=user.player, game_info=game).exists():
+                bought = True
 
     # Generate random string for pid
     min_char = 8
@@ -113,13 +121,13 @@ def game_detail(request, game_id):
         Payment.objects.create(game=game, pid=pid).save()
 
     # checksum is the value that should be used in the payment request
-    return render(request, "games/gaming.html", {'pid': pid, 'sid': sid, 'amount': amount, 'checksum': checksum, "game":game})
+    return render(request, "games/gaming.html", {'pid': pid, 'sid': sid, 'amount': amount, 'checksum': checksum, "game":game, "bought": bought})
 
 
 def player_game(request):
     if request.user.is_authenticated:
         user = get_object_or_404(User, pk=request.user.id)
-        if user.player:
+        if hasattr(user, 'player'):
             my_bought_game_list = user.player.boughtgame_set.all()
             return render(request, 'games/playersgames.html', {'my_bought_game_list': my_bought_game_list})
 
@@ -139,7 +147,8 @@ def show_modify_game(request, game_id):
         price = game.price
         url = game.url_link
         description = game.description
-        form = CreateNewGameForm(initial={'name': name, 'price': price, 'url': url, 'description': description})
+        game_picture = game.game_profile_picture
+        form = CreateNewGameForm(initial={'name': name, 'price': price, 'url': url, 'description': description, 'game_picture': game_picture })
         return render(request, "games/modifygame.html", {'form': form, 'id': game_id})
     return redirect("games:index")
 
@@ -160,7 +169,6 @@ def activate_user_account(request, uidb64=None, token=None):
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
         user.save()
-        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
         return render(request, "games/thanks.html", { 'message': 'Thank you for your email confirmation. Now you can login your account.'})
     else:
@@ -262,6 +270,7 @@ def create_new_game(request):
             price = form.cleaned_data['price']
             url = form.cleaned_data['url']
             description = form.cleaned_data['description']
+            game_profile_picture = form.cleaned_data['game_picture']
             label = request.POST['label']
             developer = User.objects.get(pk=request.user.id).developer
 
@@ -272,7 +281,8 @@ def create_new_game(request):
             if name is not None and price is not None and url is not None and description is not None and label is not None and developer is not None:
                 if price >= 0:
                     l = get_object_or_404(Label, type=label)
-                    game = Game.objects.create(name=name, price=int(price), url_link=url, description=description, developer=developer, label=l).save()
+                    game = Game.objects.create(name=name, price=int(
+                        price), url_link=url, description=description, developer=developer, game_profile_picture=game_profile_picture, label=l).save()
                 else:
                     newForm = CreateNewGameForm()
                     return render(request, "games/newgame.html", {"error": "Price cannot be negative!", "form": newForm})
@@ -298,7 +308,7 @@ def gaming(request):
                 if preGamestate is None:
                     newState.save()
                 else:
-                    BoughtGame.objects.filter(user=currentUser, game_info=game).update(game_state=gameState)   
+                    BoughtGame.objects.filter(user=currentUser, game_info=game).update(game_state=gameState)
                 response = {
                     'messageType':"SAVE",
                     'gameState':gameState

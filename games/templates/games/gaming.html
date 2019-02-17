@@ -16,8 +16,6 @@
                     <h1>{{game.name}}</h1>
                 </div>
                 <div class="col-xs-6 col-sm-6 col-lg-3">
-                    <!-- TODO: add price to the button -->
-                    <!-- <button class="btn btn-danger navbar-btn">Buy $</button> -->
                     <form action="http://payments.webcourse.niksula.hut.fi/pay/" method="POST" id="buy">
                         <input type="hidden" name="pid" value={{pid}} />
                         <input type="hidden" name="sid" value={{sid}} />
@@ -28,19 +26,31 @@
 
                         <label for="id_amount"></label>
                         <input type="hidden" id="id_amount" name="amount" value={{amount}} />
+                        {% if not bought %}
                         <input type="submit" value="Buy for {{amount}}€" class="btn"/>
+                        {% endif %}
                     </form>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-xs-12 col-sm-9 col-lg-9" >
-                    <iframe class="game" src="{{game.url_link}}"></iframe>
-                    <div class="row">
-                        <div class="col-xs-3 col-sm-6 col-lg-3">
-                            <p><a href="#">SHARE</a></p>
-                        </div>
-                    </div>
+                    {% if user.is_authenticated and user.player %}
+
+                        {% if bought %}
+                            <iframe class="game" src="{{game.url_link}}"></iframe>
+                            <div class="row">
+                                <div class="col-xs-3 col-sm-6 col-lg-3">
+                                    <p><a href="#">SHARE</a></p>
+                                </div>
+                            </div>
+                        {% else %}
+                            <p>If you want to play, please buy the game</p>
+                        {% endif %}
+
+                    {% else %}
+                        <p>Please log in as a player to play the game</p>
+                    {% endif %}
                 </div>
                 <div class="col-xs-12 col-sm-3 col-lg-3" >
                     <h2>Introduction</h2>
