@@ -221,7 +221,7 @@ def signup_user(request):
                 mail_subject = 'Activate your game account.'
                 message = render_to_string('games/activation.html', {
                     'user': user,
-                    'domain': current_site.domain[:-1],
+                    'domain': current_site.domain,
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
                     'token': account_activation_token.make_token(user),
                 })
@@ -241,7 +241,7 @@ def signup_user(request):
                 mail_subject = 'Activate your game account.'
                 message = render_to_string('games/activation.html', {
                     'user': user,
-                    'domain': current_site.domain[:-1],
+                    'domain': current_site.domain,
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
                     'token': account_activation_token.make_token(user),
                 })
@@ -292,8 +292,7 @@ def create_new_game(request):
             if name is not None and price is not None and url is not None and description is not None and label is not None and developer is not None:
                 if price >= 0:
                     l = get_object_or_404(Label, type=label)
-                    game = Game.objects.create(name=name, price=int(
-                        price), url_link=url, description=description, developer=developer, game_profile_picture=game_profile_picture, label=l).save()
+                    game = Game.objects.create(name=name, price=int(price), url_link=url, description=description, developer=developer, game_profile_picture=game_profile_picture, label=l).save()
                 else:
                     newForm = CreateNewGameForm()
                     return render(request, "games/newgame.html", {"error": "Price cannot be negative!", "form": newForm})
@@ -389,6 +388,7 @@ def modify_game(request, game_id):
             name = form.cleaned_data['name']
             price = form.cleaned_data['price']
             url = form.cleaned_data['url']
+            game_profile_picture = form.cleaned_data['game_picture']
             description = form.cleaned_data['description']
 
             game = get_object_or_404(Game, pk=game_id)
@@ -397,6 +397,7 @@ def modify_game(request, game_id):
                 game.price = price
                 game.url = url
                 game.description = description
+                game.game_profile_picture = game_profile_picture
                 game.save()
             return redirect("games:inventory")
 

@@ -65,8 +65,8 @@ class Game(models.Model):
     developer = models.ForeignKey(
         Developer, on_delete=models.CASCADE, related_name='developedgames')
     price = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    game_profile_picture = models.CharField(max_length=150)
-    url_link = models.URLField()
+    game_profile_picture = models.CharField(max_length=500)
+    url_link = models.URLField(max_length=500)
     description = models.TextField()
     label = models.ForeignKey(Label, on_delete=models.CASCADE, default=1)
     sales = models.IntegerField(default=0,validators=[MinValueValidator(0)])
