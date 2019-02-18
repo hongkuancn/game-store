@@ -289,11 +289,10 @@ def create_new_game(request):
                 newForm = CreateNewGameForm()
                 return render(request, "games/newgame.html", {"error": "Same game name exists", "form": newForm})
 
-            if name is not None and price is not None and url is not None and description is not None and label is not None and developer is not None:
+            if name is not None and price is not None and url is not None and description is not None and label is not None and developer is not None and game_profile_picture is not None:
                 if price >= 0:
                     l = get_object_or_404(Label, type=label)
-                    game = Game.objects.create(name=name, price=int(
-                        price), url_link=url, description=description, developer=developer, game_profile_picture=game_profile_picture, label=l).save()
+                    game = Game.objects.create(name=name, price=int(price), url_link=url, description=description, developer=developer, game_profile_picture=game_profile_picture, label=l).save()
                 else:
                     newForm = CreateNewGameForm()
                     return render(request, "games/newgame.html", {"error": "Price cannot be negative!", "form": newForm})
