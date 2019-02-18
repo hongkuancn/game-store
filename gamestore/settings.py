@@ -79,9 +79,6 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
 )
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '730325085268-urfo65hof3ntspvfbijnn08aip14615h.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'QPNkOSyi261vr3nzslVrjbS_'
-
 WSGI_APPLICATION = 'gamestore.wsgi.application'
 
 LOGIN_URL = '/auth/login/google-oauth2/'
