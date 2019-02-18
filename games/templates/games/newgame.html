@@ -8,7 +8,7 @@
 
 {% block content %}
 <div class="content">
-    <form class="container" action="{% url 'games:create_new_game' %}" method="post" id="form">
+    <form class="container" action="{% url 'games:create_new_game' %}" method="POST" id="form">
 
         <div class="text-danger" role="alert">
             {{ error }}

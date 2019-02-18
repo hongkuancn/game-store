@@ -1,3 +1,4 @@
+import dj_database_url
 """
 Django settings for gamestore project.
 
@@ -168,4 +169,4 @@ if "DYNO" in os.environ:
     DEBUG = False  # <== THIS NEEDS TO BE FALSE AFTER YOU GET EVERYTHING WORKING!
 
     # This is the hostname for your site
-    ALLOWED_HOSTS = ['*']
+    ALLOWED_HOSTS = ['game2333.herokuapp.com']
