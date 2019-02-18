@@ -1,6 +1,7 @@
 from random import *
 import string
 import json
+import os
 from django.db.models import F
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
@@ -112,16 +113,19 @@ def game_detail(request, game_id):
 
     from hashlib import md5
 
-    pid = '{}{}'.format(game.name, rdmstr)
-    sid = '2333'
+    pid = '{}{}'.format(rdmstr, game.id)
+    # print(pid)
+    sid = os.environ['PID']
     amount = game.price
-    secret_key = '786e1a1033b80aec7b150581c209be39'
+    # print(amount)
+    secret_key = os.environ['SECRET_KEY']
     checksumstr = "pid={}&sid={}&amount={}&token={}".format(
         pid, sid, amount, secret_key)
 
     # checksumstr is the string concatenated above
     m = md5(checksumstr.encode("ascii"))
     checksum = m.hexdigest()
+    # print(checksum)
 
     # if there is no such pid
     if not Payment.objects.filter(pid=pid).exists():
@@ -354,8 +358,6 @@ def gaming(request):
                     'error': "There is an error"
                 }
     return JsonResponse(response)
-
-    # return redirect('games:index')
 
 
 def payment_success(request):
