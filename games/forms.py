@@ -26,10 +26,10 @@ class LoginForm(forms.Form):
 
 
 class CreateNewGameForm(forms.Form):
-    name = forms.CharField(label='Name', max_length=100)
+    name = forms.CharField(label='Name', max_length=50)
     price = forms.FloatField(label='Price')
-    url = forms.URLField(label="URL Link")
-    game_picture = forms.URLField(label="Game Picture")
+    url = forms.URLField(label="URL Link", max_length=500)
+    game_picture = forms.URLField(label="Game Picture", max_length=500)
     description = forms.CharField()
 
     def __init__(self, *args, **kwargs):

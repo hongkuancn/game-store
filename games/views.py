@@ -355,8 +355,6 @@ def gaming(request):
                 }
     return JsonResponse(response)
 
-    # return redirect('games:index')
-
 
 def payment_success(request):
     if request.user.is_authenticated:
