@@ -1,6 +1,9 @@
 .row{
     min-height: 1000px;
 }
+.balance p{
+    color: #77abb7;
+}
 .row h2{
     font-size: 20px;
     font-family: Adobe Garamond, Georgia, SansSerif;
@@ -21,7 +24,7 @@
     font-family: Futura, Arial;
     margin: 1vw;
     margin-bottom: 0;
-    color: #77abb7;
+    /*color: #77abb7;*/
 }
 .labels p{
     font-size: 18px;

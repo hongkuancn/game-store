@@ -10,11 +10,12 @@
     <div class="col-xs-2 col-sm-2 col-lg-2">
     </div>
     <div class="col-xs-12 col-sm-8 col-lg-8" >
-
+    {% if user.player %}
         <h2>MY BALANCE</h2>
-        <div class="cap">
-            <p>€</p>
+        <div class="balance">
+            <p>{{ user.player.balance }} €</p>
         </div>
+    {% endif %}
 
         <h2>BOUGHT GAMES</h2>
         <div class="row">
