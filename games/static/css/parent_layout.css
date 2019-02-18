@@ -21,6 +21,8 @@
 }
 #navigator li a{
     color: #b9c0d5;
+    font-size: 17px;
+    font-weight: 500;
 }
 #navigator li a:hover{
     color: #77abb7;
