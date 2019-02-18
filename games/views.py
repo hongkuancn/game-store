@@ -1,12 +1,11 @@
 from random import *
 import string
+import json
 from django.db.models import F
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
-from django.http import HttpResponse, Http404
-import json
-from django.http import JsonResponse
+from django.http import HttpResponse, Http404, JsonResponse
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text
@@ -15,7 +14,6 @@ from django.template.loader import render_to_string
 from .token import account_activation_token
 from django.core.mail import EmailMessage
 
-from django.urls import reverse
 from .models import Developer, Player, Game, BoughtGame, Label, Payment
 from .forms import SignupForm, LoginForm, CreateNewGameForm
 
@@ -76,7 +74,7 @@ def logout_user(request):
     logout(request)
     return redirect('games:index')
 
-
+# show games created by a developer user
 def inventory(request):
     user = get_object_or_404(User, pk=request.user.id)
     if hasattr(user, 'developer'):
@@ -84,6 +82,15 @@ def inventory(request):
         return render(request, "games/inventory.html", {'my_game_list': my_game_list})
     else:
         return redirect('games:index')
+
+
+def show_game_with_category(request, category):
+    label = get_object_or_404(Label, type=category)
+    try:
+        games = list(Game.objects.filter(label=label))
+    except Game.DoesNotExist:
+        games = []
+    return render(request, "games/index.html", {'game_list': games})
 
 
 def game_detail(request, game_id):
@@ -123,7 +130,7 @@ def game_detail(request, game_id):
     # checksum is the value that should be used in the payment request
     return render(request, "games/gaming.html", {'pid': pid, 'sid': sid, 'amount': amount, 'checksum': checksum, "game":game, "bought": bought})
 
-
+# show games bought by a player user
 def player_game(request):
     if request.user.is_authenticated:
         user = get_object_or_404(User, pk=request.user.id)
@@ -148,15 +155,19 @@ def show_modify_game(request, game_id):
         url = game.url_link
         description = game.description
         game_picture = game.game_profile_picture
+        label = game.label.type
         form = CreateNewGameForm(initial={'name': name, 'price': price, 'url': url, 'description': description, 'game_picture': game_picture })
-        return render(request, "games/modifygame.html", {'form': form, 'id': game_id})
+        return render(request, "games/modifygame.html", {'form': form, 'id': game_id, 'label': label })
     return redirect("games:index")
 
 
 def game_purchase_history(request, game_id):
     game = get_object_or_404(Game, pk=game_id)
     if game.developer.user.id == request.user.id:
-        game_history = get_list_or_404(BoughtGame, game_info=game)
+        try:
+            game_history = list(BoughtGame.objects.filter(game_info=game))
+        except BoughtGame.DoesNotExist:
+            game_history = []
     return render(request, 'games/statistics.html', {'game_history': game_history})
 
 

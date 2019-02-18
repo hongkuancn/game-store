@@ -14,13 +14,15 @@
 
             <ul class="nav nav-list">
                 <li class="nav-header">CATEGORIES</li>
-                <li class="active"><a href="#" class="cate">All</a></li>
-                <li><a href="#" class="cate"> Adventure</a></li>
-                <li><a href="#" class="cate"> Puzzle</a></li>
-                <li><a href="#" class="cate"> Action</a></li>
-                <li><a href="#" class="cate"> Combat</a></li>
-                <li><a href="#" class="cate"> Sports</a></li>
-                <li><a href="#" class="cate"> Racing</a></li>
+                <li class="active"><a href="{% url 'games:index'%}" class="cate">All</a></li>
+                <li><a href="{% url 'games:show_game_with_category' 'adventure' %}" class="cate"> Adventure</a></li>
+                <li><a href="{% url 'games:show_game_with_category' 'action' %}" class="cate"> Action</a></li>
+                <li><a href="{% url 'games:show_game_with_category' 'combat' %}" class="cate"> Combat</a></li>
+                <li><a href="{% url 'games:show_game_with_category' 'puzzle' %}" class="cate"> Puzzle</a></li>
+                <li><a href="{% url 'games:show_game_with_category' 'racing' %}" class="cate"> Racing</a></li>
+                <li><a href="{% url 'games:show_game_with_category' 'sports' %}" class="cate"> Sports</a></li>
+                <li><a href="{% url 'games:show_game_with_category' 'strategy' %}" class="cate"> Strategy</a></li>
+                <li><a href="{% url 'games:show_game_with_category' 'other' %}" class="cate"> Other</a></li>
             </ul>
         </div>
 
@@ -66,6 +68,8 @@
         <div class="row">
             <h2>OFFERS</h2>
 
+
+            {% if game_list %}
             <!-- Below is one section of a game in game list-->
             {% for game in game_list %}
 
@@ -89,6 +93,8 @@
             </div>
 
             {% endfor %}
+
+            {% endif %}
 
         </div>
     </div>
