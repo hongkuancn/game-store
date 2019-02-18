@@ -168,15 +168,6 @@ django_heroku.settings(locals())
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
-DATABASES['default'] = dj_database_url.config(
-    conn_max_age=600, ssl_require=True)
-
-# Once service is succesfully deployed this should be False
-DEBUG = True  # <== THIS NEEDS TO BE FALSE AFTER YOU GET EVERYTHING WORKING!
-
-# This is the hostname for your site
-ALLOWED_HOSTS = ['*']
-
 if "DYNO" in os.environ:
 
     #Override the sqlite
@@ -185,7 +176,7 @@ if "DYNO" in os.environ:
         conn_max_age=600, ssl_require=True)
 
     # Once service is succesfully deployed this should be False
-    DEBUG = True  # <== THIS NEEDS TO BE FALSE AFTER YOU GET EVERYTHING WORKING!
+    DEBUG = False  # <== THIS NEEDS TO BE FALSE AFTER YOU GET EVERYTHING WORKING!
 
     # This is the hostname for your site
     ALLOWED_HOSTS = ['*']
