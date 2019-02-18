@@ -20,20 +20,79 @@
 
 
                 {{ form }}
-                <!-- <input type="hidden" name="id" value={{id}} /> -->
-                <div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" id="inlineCheckbox1" value="adventure" name="label" checked>
-                        <label class="form-check-label" for="inlineCheckbox1">Adventure</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" id="inlineCheckbox2" value="puzzle" name="label">
-                        <label class="form-check-label" for="inlineCheckbox2">Puzzle</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" id="inlineCheckbox3" value="action" name="label">
-                        <label class="form-check-label" for="inlineCheckbox3">Action</label>
-                    </div>
+                <div class="labels">
+                    {% if label == 'adventure' %}
+                        <label class="radio-inline" style="margin-left: 10px">
+                            <input type="radio" name="label" value="adventure" checked>Adventure
+                        </label>
+                    {% else %}
+                        <label class="radio-inline" style="margin-left: 10px">
+                            <input type="radio" name="label" value="adventure">Adventure
+                        </label>
+                    {% endif %}
+                    {% if label == 'action' %}
+                        <label class="radio-inline">
+                            <input type="radio" name="label" value="action" checked>Action
+                        </label>
+                    {% else %}
+                        <label class="radio-inline">
+                            <input type="radio" name="label" value="action">Action
+                        </label>
+                    {% endif %}
+                    {% if label == 'combat' %}
+                        <label class="radio-inline">
+                            <input type="radio" name="label" value="combat" checked>Combat
+                        </label>
+                    {% else %}
+                        <label class="radio-inline">
+                            <input type="radio" name="label" value="combat">Combat
+                        </label>
+                    {% endif %}
+                    {% if label == 'puzzle' %}
+                        <label class="radio-inline">
+                            <input type="radio" name="label" value="puzzle" checked>Puzzle
+                        </label>
+                    {% else %}
+                        <label class="radio-inline">
+                            <input type="radio" name="label" value="puzzle">Puzzle
+                        </label>
+                    {% endif %}
+                    {% if label == 'racing' %}
+                        <label class="radio-inline">
+                            <input type="radio" name="label" value="racing" checked>Racing
+                        </label>
+                    {% else %}
+                        <label class="radio-inline">
+                            <input type="radio" name="label" value="racing">Racing
+                        </label>
+                    {% endif %}
+                    {% if label == 'sports' %}
+                        <label class="radio-inline">
+                            <input type="radio" name="label" value="sports" checked>Sports
+                        </label>
+                    {% else %}
+                        <label class="radio-inline">
+                            <input type="radio" name="label" value="sports">Sports
+                        </label>
+                    {% endif %}
+                    {% if label == 'strategy' %}
+                        <label class="radio-inline">
+                            <input type="radio" name="label" value="strategy" checked>Strategy
+                        </label>
+                    {% else %}
+                        <label class="radio-inline">
+                            <input type="radio" name="label" value="strategy">Strategy
+                        </label>
+                    {% endif %}
+                    {% if label == 'checked' %}
+                        <label class="radio-inline">
+                            <input type="radio" name="label" value="other" checked>Other
+                        </label>
+                    {% else %}
+                        <label class="radio-inline">
+                            <input type="radio" name="label" value="other">Other
+                        </label>
+                    {% endif %}
                 </div>
 
                 <button type="submit" class="btn ">Save</button>

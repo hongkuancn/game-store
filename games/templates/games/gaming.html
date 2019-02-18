@@ -3,6 +3,15 @@
 {% block prerequisites %}
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/gaming_layout.css' %}">
+    <meta property="og:title" content="{{game.name}}-2333 Game Store">
+    <meta property="og:url" content="{{request.get_full_path}}">
+    <meta property="og:description" content="Come and play the game!">
+    <meta property="og:image" content="{{game.game_profile_picture}}">
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="{{game.name}}-2333 Game Store" />
+    <meta name="twitter:description" content="Come and play the game!" />
+    <meta name="twitter:image" content="{{game.game_profile_picture}}" />
 {% endblock %}
 
 {% block content %}
@@ -41,7 +50,10 @@
                             <iframe class="game" src="{{game.url_link}}"></iframe>
                             <div class="row">
                                 <div class="col-xs-3 col-sm-6 col-lg-3">
-                                    <p><a href="#">SHARE</a></p>
+                                    <p><a href="#" class="shareFacebook"
+                                            target="_blank">SHARE on Facebook</a></p>
+                                    <p><a href="#" class="shareTwitter"
+                                            target="_blank">SHARE on Twitter</a></p>
                                 </div>
                             </div>
                         {% else %}
