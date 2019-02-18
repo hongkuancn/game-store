@@ -46,14 +46,16 @@ body{
     overflow: auto;
 }
 .nav-list{
-    width: 60%;
+    max-width: 100%;
     float: right;
     margin-top: 4vw;
     color: #77abb7;
 }
-.row>.nav-list>li>a:hover, .cate:hover {
+
+.cat>.nav>li>a:hover, .nav>li>a:active, .cate:hover {
     color: #b9c0d5;
-    background-color: #1d3e53; !important;
+    text-decoration: none;
+    background-color: #1d3e53; !important
 }
 .cate{
     color: #77abb7;
@@ -61,10 +63,10 @@ body{
     margin-top: -8px;
 }
 .nav-header{
-    font-size: 18px;
+    font-size: 16px;
     font-family: Adobe Garamond, Georgia, SansSerif;
     letter-spacing: 2px;
-    padding-left: 15px;
+    padding-left: 5px;
     margin-bottom: 0.8vw;
     color: #b9c0d5;
 }

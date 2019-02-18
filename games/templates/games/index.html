@@ -8,23 +8,20 @@
 
 {% block content %}
 <div class="row" style="background-color: #1d3e53; margin-left: 0px; margin-right: 0px; min-height: 100vmax">
-    <div class="col-xs-12 col-sm-2 col-lg-2">
+    <div class="col-xs-12 col-sm-2 col-lg-2 cat">
 
-        <div class="row">
-
-            <ul class="nav nav-list">
-                <li class="nav-header">CATEGORIES</li>
-                <li class="active"><a href="{% url 'games:index'%}" class="cate">All</a></li>
-                <li><a href="{% url 'games:show_game_with_category' 'adventure' %}" class="cate"> Adventure</a></li>
-                <li><a href="{% url 'games:show_game_with_category' 'action' %}" class="cate"> Action</a></li>
-                <li><a href="{% url 'games:show_game_with_category' 'combat' %}" class="cate"> Combat</a></li>
-                <li><a href="{% url 'games:show_game_with_category' 'puzzle' %}" class="cate"> Puzzle</a></li>
-                <li><a href="{% url 'games:show_game_with_category' 'racing' %}" class="cate"> Racing</a></li>
-                <li><a href="{% url 'games:show_game_with_category' 'sports' %}" class="cate"> Sports</a></li>
-                <li><a href="{% url 'games:show_game_with_category' 'strategy' %}" class="cate"> Strategy</a></li>
-                <li><a href="{% url 'games:show_game_with_category' 'other' %}" class="cate"> Other</a></li>
-            </ul>
-        </div>
+        <ul class="nav nav-list ">
+            <li class="nav-header">CATEGORIES</li>
+            <li class="active"><a href="{% url 'games:index'%}" class="cate">All</a></li>
+            <li><a href="{% url 'games:show_game_with_category' 'adventure' %}" class="cate"> Adventure</a></li>
+            <li><a href="{% url 'games:show_game_with_category' 'action' %}" class="cate"> Action</a></li>
+            <li><a href="{% url 'games:show_game_with_category' 'combat' %}" class="cate"> Combat</a></li>
+            <li><a href="{% url 'games:show_game_with_category' 'puzzle' %}" class="cate"> Puzzle</a></li>
+            <li><a href="{% url 'games:show_game_with_category' 'racing' %}" class="cate"> Racing</a></li>
+            <li><a href="{% url 'games:show_game_with_category' 'sports' %}" class="cate"> Sports</a></li>
+            <li><a href="{% url 'games:show_game_with_category' 'strategy' %}" class="cate"> Strategy</a></li>
+            <li><a href="{% url 'games:show_game_with_category' 'other' %}" class="cate"> Other</a></li>
+        </ul>
 
     </div>
 
