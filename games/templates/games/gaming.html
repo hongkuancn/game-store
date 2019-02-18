@@ -49,11 +49,15 @@
                         {% if bought %}
                             <iframe class="game" src="{{game.url_link}}"></iframe>
                             <div class="row">
-                                <div class="col-xs-3 col-sm-6 col-lg-3">
-                                    <p><a href="#" class="shareFacebook"
-                                            target="_blank">SHARE on Facebook</a></p>
+                                <div class="col-xs-3 col-sm-6 col-lg-3 share">
+                                    <p style="margin-top:5px;"><a href="#" class="shareFacebook"
+                                          target="_blank" >
+                                        <img src="{% static "images/fb.png" %}" style="width: 20px; height: 20px; margin-top: -7px;">
+                                        SHARE on Facebook</a></p>
                                     <p><a href="#" class="shareTwitter"
-                                            target="_blank">SHARE on Twitter</a></p>
+                                            target="_blank">
+                                        <img src="{% static "images/twitter.png" %}" style="width: 20px; height: 20px; margin-top: -7px;">
+                                        SHARE on Twitter</a></p>
                                 </div>
                             </div>
                         {% else %}
