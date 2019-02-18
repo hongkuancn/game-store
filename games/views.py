@@ -241,7 +241,7 @@ def signup_user(request):
                 mail_subject = 'Activate your game account.'
                 message = render_to_string('games/activation.html', {
                     'user': user,
-                    'domain': current_site.domain[:-1],
+                    'domain': current_site.domain,
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
                     'token': account_activation_token.make_token(user),
                 })
