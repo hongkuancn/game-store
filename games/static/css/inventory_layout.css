@@ -13,4 +13,6 @@ body{
 .gamesec .thumbnail{
     height: 100%;
 }
-
+.thumbnail .btn:hover{
+    color: #b9c0d5;
+}

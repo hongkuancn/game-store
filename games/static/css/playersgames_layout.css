@@ -1,6 +1,9 @@
 .row{
     min-height: 1000px;
 }
+.balance p{
+    color: #77abb7;
+}
 .row h2{
     font-size: 20px;
     font-family: Adobe Garamond, Georgia, SansSerif;
@@ -38,7 +41,6 @@
     color: #77abb7;
     border: none;
 }
-
 .gamesec .thumbnail:hover{
     background-color: #77abb7;
 }

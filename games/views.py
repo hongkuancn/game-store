@@ -144,7 +144,7 @@ def payment_error(request):
 
 
 def payment_cancel(request):
-    return render(request, "games/login.html",)
+    return redirect("games:index")
 
 
 def show_modify_game(request, game_id):

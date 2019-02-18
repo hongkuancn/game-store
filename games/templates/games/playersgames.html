@@ -10,6 +10,12 @@
     <div class="col-xs-2 col-sm-2 col-lg-2">
     </div>
     <div class="col-xs-12 col-sm-8 col-lg-8" >
+    {% if user.player %}
+        <h2>MY BALANCE</h2>
+        <div class="balance">
+            <p>{{ user.player.balance }} €</p>
+        </div>
+    {% endif %}
 
         <h2>BOUGHT GAMES</h2>
         <div class="row">
@@ -19,9 +25,9 @@
                 <div class="col-xs-12 col-sm-6 col-lg-4 gamesec">
                     <div class="thumbnail">
                         {% if boughtgame.game_info.game_profile_picture %}
-                            <img src="{{boughtgame.game_info.game_profile_picture}}" alt="Lights" style="width:100%">
+                            <img src="{{boughtgame.game_info.game_profile_picture}}" alt="Lights" style="width:100%; height: 19vh;">
                         {% else %}
-                            <img src="{% static 'images/game2.jpg' %}" alt="Lights" style="width:100%">
+                            <img src="{% static 'images/game2.jpg' %}" alt="Lights" style="width:100%; height: 19vh;">
                         {% endif %}
                         <a href="{% url 'games:game_detail' boughtgame.game_info.id %}" class="sec">
                             <div class="cap">
