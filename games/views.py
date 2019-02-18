@@ -274,6 +274,7 @@ def log_user_in(request):
 
 
 def create_new_game(request):
+    print('something wrong')
     if request.method == "POST":
         form = CreateNewGameForm(request.POST)
         if form.is_valid():
