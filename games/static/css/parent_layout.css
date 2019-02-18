@@ -63,9 +63,16 @@
     color: #b9c0d5;
 }
 .btn:hover{
+    color: #b9c0d5;
     background-color:#254b62;
+}
+.dropdown-menu .btn:hover, #dropdown_list .btn:hover{
+    color: #b9c0d5;
 }
 body{
     color: #1d3e53;
     overflow-x:hidden;
+}
+#buy .btn:hover{
+    color: #b9c0d5;
 }
