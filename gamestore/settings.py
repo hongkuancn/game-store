@@ -1,3 +1,4 @@
+import dj_database_url
 """
 Django settings for gamestore project.
 
@@ -165,6 +166,16 @@ django_heroku.settings(locals())
 
 # Only when running in Heroku
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
+DATABASES['default'] = dj_database_url.config(
+    conn_max_age=600, ssl_require=True)
+
+# Once service is succesfully deployed this should be False
+DEBUG = True  # <== THIS NEEDS TO BE FALSE AFTER YOU GET EVERYTHING WORKING!
+
+# This is the hostname for your site
+ALLOWED_HOSTS = ['*']
 
 if "DYNO" in os.environ:
 
