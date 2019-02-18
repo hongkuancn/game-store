@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -51,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'gamestore.urls'
@@ -150,3 +152,29 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 SITE_ID = 1
+
+STATIC_URL = '/static/'
+
+# Extra places for collectstatic to find static files.
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'games/static'),
+)
+
+# Activate Django-Heroku.
+django_heroku.settings(locals())
+
+# Only when running in Heroku
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+if "DYNO" in os.environ:
+
+    #Override the sqlite
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.config(
+        conn_max_age=600, ssl_require=True)
+
+    # Once service is succesfully deployed this should be False
+    DEBUG = True  # <== THIS NEEDS TO BE FALSE AFTER YOU GET EVERYTHING WORKING!
+
+    # This is the hostname for your site
+    ALLOWED_HOSTS = ['*']
