@@ -30,6 +30,7 @@
                             <h3>{{game.name}}</h3>
                             <p>{{ game.description | truncatechars:30 }}</p>
                             <p>{{game.price}} €</p>
+                            <p>Sales: {{ game.sales }}</p>
                             <div class="labels">
                                 <p>{{game.label}}</p>
                             </div>
@@ -44,12 +45,12 @@
 
             <div class="col-xs-12 col-sm-6 col-lg-4 gamesec">
                 <div class="thumbnail add">
-                    <p style="margin-bottom: 7.7vw"></p>
+                    <p style="margin-bottom: 9vw"></p>
                     <form action="{% url 'games:newgame_page' %}" style="width: 50%; margin-left: auto; margin-right: auto">
                         <button class="btn" style="height: 130px; width: 100%; font-size: 18px;
                         overflow: hidden;text-overflow:ellipsis;white-space: nowrap;">ADD A GAME</button>
                     </form>
-                    <p style="margin-bottom: 7.8vw"></p>
+                    <p style="margin-bottom: 9.1vw"></p>
                 </div>
             </div>
 
