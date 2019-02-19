@@ -322,8 +322,10 @@ def gaming(request):
         if request.method == 'POST':
             currentUser = request.user.player
             game = Game.objects.filter(pk=request.POST['id']).first()
+            # load data from game
             data = json.loads(request.POST['data'])
             messageType = data['messageType']
+            # send back responses and data from service to game
             if messageType == "SAVE":
                 preState = BoughtGame.objects.filter(user=currentUser, game_info=game).values('game_state').last()
                 preGamestate = preState['game_state']
@@ -353,6 +355,7 @@ def gaming(request):
                     newBestscore.save()
                 elif newScore > preScore:
                     BoughtGame.objects.filter(user=currentUser, game_info=game).update(best_score=newScore)
+                # create a highest score list and save the first three highest scores
                 scoreList = BoughtGame.objects.filter(game_info=game).order_by('-best_score')[:3]
                 bestScores = ""
                 for scores in scoreList:
