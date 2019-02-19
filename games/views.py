@@ -37,6 +37,7 @@ def index(request):
     if not Label.objects.filter(type='other').exists():
         l3 = Label.objects.create(type='other').save()
 
+    # Specifically for Google Login when the user haven't choose his/her role
     if request.user.is_authenticated:
         user = get_object_or_404(User, pk=request.user.id)
         if not hasattr(user, 'developer') and not hasattr(user, 'player'):
@@ -153,7 +154,7 @@ def payment_error(request):
 def payment_cancel(request):
     return redirect("games:index")
 
-
+# show the page when developer modifies his/her game
 def show_modify_game(request, game_id):
     game = get_object_or_404(Game, pk=game_id)
     if game.developer.user.id == request.user.id:
@@ -167,7 +168,7 @@ def show_modify_game(request, game_id):
         return render(request, "games/modifygame.html", {'form': form, 'id': game_id, 'label': label })
     return redirect("games:index")
 
-
+# detailed purchase history of a game
 def game_purchase_history(request, game_id):
     game = get_object_or_404(Game, pk=game_id)
     if game.developer.user.id == request.user.id:
@@ -177,20 +178,6 @@ def game_purchase_history(request, game_id):
             game_history = []
     return render(request, 'games/statistics.html', {'game_history': game_history})
 
-
-def activate_user_account(request, uidb64=None, token=None):
-    try:
-        uid = force_text(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None
-    if user is not None and account_activation_token.check_token(user, token):
-        user.is_active = True
-        user.save()
-
-        return render(request, "games/thanks.html", { 'message': 'Thank you for your email confirmation. Now you can login your account.'})
-    else:
-        return render(request, "games/thanks.html", {'message': 'Activation link is invalid!'})
 
 """
 POST handlers
@@ -281,7 +268,6 @@ def log_user_in(request):
 
 
 def create_new_game(request):
-    print('something wrong')
     if request.method == "POST":
         form = CreateNewGameForm(request.POST)
         if form.is_valid():
@@ -314,6 +300,21 @@ def create_new_game(request):
                 newForm = CreateNewGameForm()
                 return render(request, "games/newgame.html", {"error": "Required field should be filled", "form": newForm})
     return redirect("games:inventory")
+
+
+def activate_user_account(request, uidb64=None, token=None):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+
+        return render(request, "games/thanks.html", {'message': 'Thank you for your email confirmation. Now you can login your account.'})
+    else:
+        return render(request, "games/thanks.html", {'message': 'Activation link is invalid!'})
 
 
 def gaming(request):
@@ -434,7 +435,6 @@ def modify_game(request, game_id):
                 form = CreateNewGameForm(initial={'name': game.name, 'price': game.price, 'url': game.url_link, 'description': game.description, 'game_picture': game.game_profile_picture})
                 return render(request, "games/modifygame.html", {'form': form, 'id': game_id, 'label': label, "error": "Something went wrong!"})
 
-
             return redirect("games:inventory")
 
 
@@ -444,7 +444,7 @@ def delete_game(request, game_id):
         game.delete()
     return redirect("games:inventory")
 
-
+# For users with Google Login
 def choose_type(request):
     if request.method == "POST":
         userType = request.POST['userType']
@@ -457,7 +457,6 @@ def choose_type(request):
             developer = Developer.objects.create(user=user).save()
             user.save()
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-            # Developer redirect to inventory page
             return redirect("games:inventory")
         elif userType == 'player':
             player = Player.objects.create(user=user, balance=100).save()

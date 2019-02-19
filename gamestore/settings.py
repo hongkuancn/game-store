@@ -1,4 +1,3 @@
-import dj_database_url
 """
 Django settings for gamestore project.
 
@@ -40,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'games.apps.GamesConfig',
-
     'social_django',
 ]
 
@@ -74,18 +72,19 @@ TEMPLATES = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    # Needed to login by username in Django admin, regardless of `allauth`
+
     'django.contrib.auth.backends.ModelBackend',
 
     'social_core.backends.google.GoogleOAuth2',
 )
 
+
+# Store sensitive info as Heroku environment var
+# Google Login
 if 'SOCIAL_AUTH_GOOGLE_OAUTH2_KEY' in os.environ:
     SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ['SOCIAL_AUTH_GOOGLE_OAUTH2_KEY']
 if 'SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET' in os.environ:
     SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ['SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET']
-
-WSGI_APPLICATION = 'gamestore.wsgi.application'
 
 LOGIN_URL = '/auth/login/google-oauth2/'
 
@@ -93,6 +92,9 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
+
+WSGI_APPLICATION = 'gamestore.wsgi.application'
+
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
@@ -136,9 +138,6 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
-
 # Console backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -159,7 +158,7 @@ django_heroku.settings(locals())
 # Only when running in Heroku
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-
+# Settings for deployment
 if "DYNO" in os.environ:
 
     #Override the sqlite
