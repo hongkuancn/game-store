@@ -1,7 +1,5 @@
 from random import *
-import string
-import json
-import os
+import string, json, os, re
 from django.db.models import F
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, get_object_or_404
@@ -103,6 +101,9 @@ def game_detail(request, game_id):
         if hasattr(user, 'player'):
             if BoughtGame.objects.filter(user=user.player, game_info=game).exists():
                 bought = True
+        # Developer cannot access the purchase button and gaming inferface
+        elif hasattr(user, 'developer'):
+            bought = True
 
     # Generate random string for pid
     min_char = 8
@@ -114,10 +115,8 @@ def game_detail(request, game_id):
     from hashlib import md5
 
     pid = '{}{}'.format(rdmstr, game.id)
-    # print(pid)
     sid = os.environ['PID']
     amount = game.price
-    # print(amount)
     secret_key = os.environ['SECRET_KEY']
     checksumstr = "pid={}&sid={}&amount={}&token={}".format(
         pid, sid, amount, secret_key)
@@ -125,14 +124,18 @@ def game_detail(request, game_id):
     # checksumstr is the string concatenated above
     m = md5(checksumstr.encode("ascii"))
     checksum = m.hexdigest()
-    # print(checksum)
 
     # if there is no such pid
     if not Payment.objects.filter(pid=pid).exists():
         Payment.objects.create(game=game, pid=pid).save()
 
+    try:
+        score_list = list(BoughtGame.objects.filter(game_info=game).order_by('-best_score'))[:3]
+    except BoughtGame.DoesNotExist:
+        scoreList = []
+
     # checksum is the value that should be used in the payment request
-    return render(request, "games/gaming.html", {'pid': pid, 'sid': sid, 'amount': amount, 'checksum': checksum, "game":game, "bought": bought})
+    return render(request, "games/gaming.html", {'pid': pid, 'sid': sid, 'amount': amount, 'checksum': checksum, "game":game, "bought": bought, 'score_list': score_list})
 
 # show games bought by a player user
 def player_game(request):
@@ -295,12 +298,18 @@ def create_new_game(request):
                 return render(request, "games/newgame.html", {"error": "Same game name exists", "form": newForm})
 
             if name is not None and price is not None and url is not None and description is not None and label is not None and developer is not None and game_profile_picture is not None:
-                if price >= 0:
-                    l = get_object_or_404(Label, type=label)
-                    game = Game.objects.create(name=name, price=int(price), url_link=url, description=description, developer=developer, game_profile_picture=game_profile_picture, label=l).save()
+                check_picture = bool(
+                    re.search('/([^s]+\.(?:jpg|gif|png|jpeg))$', game_profile_picture))
+                if check_picture:
+                    if price >= 0:
+                        l = get_object_or_404(Label, type=label)
+                        game = Game.objects.create(name=name, price=int(price), url_link=url, description=description, developer=developer, game_profile_picture=game_profile_picture, label=l).save()
+                    else:
+                        newForm = CreateNewGameForm()
+                        return render(request, "games/newgame.html", {"error": "Price cannot be negative!", "form": newForm})
                 else:
                     newForm = CreateNewGameForm()
-                    return render(request, "games/newgame.html", {"error": "Price cannot be negative!", "form": newForm})
+                    return render(request, "games/newgame.html", {"error": "Please provide a valid image URL", "form": newForm})
             else:
                 newForm = CreateNewGameForm()
                 return render(request, "games/newgame.html", {"error": "Required field should be filled", "form": newForm})
@@ -347,7 +356,7 @@ def gaming(request):
                 scoreList = BoughtGame.objects.filter(game_info=game).order_by('-best_score')[:3]
                 bestScores = ""
                 for scores in scoreList:
-                    bestScores = bestScores + "<tr><td>" + scores.user.user.username + "</td><td>" + str(scores.best_score) + "</td></tr>"
+                    bestScores = bestScores + "<tr><td>" + scores.user.user.username + " --------</td><td>" + str(scores.best_score) + "</td></tr>"
                 response = {
                         'messageType':"SCORE",
                         'bestScore': bestScores
@@ -391,17 +400,38 @@ def modify_game(request, game_id):
             name = form.cleaned_data['name']
             price = form.cleaned_data['price']
             url = form.cleaned_data['url']
-            game_profile_picture = form.cleaned_data['game_picture']
+            game_picture = form.cleaned_data['game_picture']
             description = form.cleaned_data['description']
-
+            label = request.POST['label']
+            developer = User.objects.get(pk=request.user.id).developer
             game = get_object_or_404(Game, pk=game_id)
-            if game.developer.user.id == request.user.id:
-                game.name = name
-                game.price = price
-                game.url = url
-                game.description = description
-                game.game_profile_picture = game_profile_picture
-                game.save()
+
+            if name is not None and price is not None and url is not None and description is not None and label is not None and developer is not None and game_picture is not None:
+                check_picture = bool(
+                    re.search('/([^s]+\.(?:jpg|gif|png|jpeg))$', game_picture))
+                if check_picture:
+                    if price >= 0:
+                        l = get_object_or_404(Label, type=label)
+                        if game.developer.user.id == request.user.id:
+                            game.name = name
+                            game.price = price
+                            game.url_link = url
+                            game.description = description
+                            game.game_profile_picture = game_picture
+                            game.label = l
+                            game.save()
+                            return redirect("games:inventory")
+                    else:
+                        form = CreateNewGameForm(initial={'name': game.name, 'price': game.price, 'url': game.url_link, 'description': game.description, 'game_picture': game.game_profile_picture})
+                        return render(request, "games/modifygame.html", {'form': form, 'id': game_id, 'label': label, "error": "Something went wrong!"})
+                else:
+                    form = CreateNewGameForm(initial={'name': game.name, 'price': game.price, 'url': game.url_link, 'description': game.description, 'game_picture': game.game_profile_picture})
+                    return render(request, "games/modifygame.html", {'form': form, 'id': game_id, 'label': label, "error": "Please provide a valid image URL"})
+            else:
+                form = CreateNewGameForm(initial={'name': game.name, 'price': game.price, 'url': game.url_link, 'description': game.description, 'game_picture': game.game_profile_picture})
+                return render(request, "games/modifygame.html", {'form': form, 'id': game_id, 'label': label, "error": "Something went wrong!"})
+
+
             return redirect("games:inventory")
 
 

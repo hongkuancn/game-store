@@ -74,7 +74,12 @@
                     <p>{{game.description}}</p>
                     <h2>Highest Scores</h2>
                     <table id="bestScore" style="font-size:20px; color:#77abb7" >
-
+                    {% for game in score_list %}
+                        <tr>
+                            <td>{{game.user.user.username}} --------</td>
+                            <td>{{game.best_score}}</td>
+                        </tr>
+                    {% endfor %}
                     </table>
                 </div>
             </div>
