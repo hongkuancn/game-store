@@ -16,6 +16,7 @@ var clickNum = 1;
 var restart = document.getElementById("restart");
 var start = document.getElementById("start");
 
+// start game
 start.addEventListener("click", Start);
 function Start(){
     if(load){
@@ -33,6 +34,7 @@ function Start(){
        
 }
 
+// restart game
 restart.addEventListener("click", Restart)
 function Restart(){
     if(submit.disabled==false){
@@ -51,7 +53,8 @@ function Restart(){
     }
 }
 
-
+// main game: use can only click the submit button ten times, each click 
+// will receive corresponding responses
 var submit = document.getElementById("submit");
 submit.addEventListener("click", myFunction);
 function myFunction(){
@@ -105,7 +108,8 @@ function myFunction(){
         submit.disabled=true;
     }                   
 }
-    
+
+// click save button for saving gamestate and score
 $("#save").click(function(){
     var msg = {
         "messageType": "SAVE",
@@ -117,8 +121,7 @@ $("#save").click(function(){
     window.parent.postMessage(msg, "*");
 });
 
-
-//document.getElementById("Load").addEventListener("click", Load);
+// click load button for loading gamestate and score 
 $("#load").click( function () {
     var msg = {
         "messageType": "LOAD_REQUEST",
@@ -126,6 +129,7 @@ $("#load").click( function () {
     window.parent.postMessage(msg, "*");
 });
 
+// listen messages from service
 window.addEventListener("message", function(evt) {
     if(evt.data.messageType === "LOAD") {
         playerItems = evt.data.gameState.playerItems;
@@ -137,12 +141,14 @@ window.addEventListener("message", function(evt) {
     }
 });
 
+// update gamestate and other data
 function update(){
     document.getElementById('hints').innerHTML = playerItems[0][1];
     count = playerItems[0][0];
     num = playerItems[0][2];
 }
 
+// send setting message to the parent window
 var message =  {
     messageType: "SETTING",
     options: {
