@@ -96,7 +96,7 @@
         var iframe = document.getElementsByTagName("iframe")[0];
         var csrftoken = $.cookie('csrftoken');
 
-    // Listen incoming messages
+        // listen incoming messages
         window.addEventListener("message", function(evt) {
             console.log(JSON.stringify(evt.data));
             switch(evt.data.messageType) {
@@ -111,7 +111,8 @@
                     alert(evt.data.info);
                     break;
             }
-
+ 
+            // set up ajax for sending data to service
             function csrfSafeMethod(method) {
                 return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
             }
