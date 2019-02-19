@@ -23,7 +23,6 @@
             <div class="row">
                 <div class="col-xs-6 col-sm-9 col-lg-9 title">
                     <a href="#" class="tooltip-test" data-toggle="tooltip" title="{{game.name}}"><h1>{{game.name}}</h1></a>
-                    <!--<div class="tooltip">{{game.name}}<span class="tooltiptext">提示文本</span></div>-->
                 </div>
                 <div class="col-xs-6 col-sm-3 col-lg-3">
                     <form action="http://payments.webcourse.niksula.hut.fi/pay/" method="POST" id="buy">
@@ -76,7 +75,7 @@
                     <table id="bestScore" style="font-size:20px; color:#77abb7" >
                     {% for game in score_list %}
                         <tr>
-                            <td>{{game.user.user.username}} --------</td>
+                            <td>{{game.user.user.username}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                             <td>{{game.best_score}}</td>
                         </tr>
                     {% endfor %}

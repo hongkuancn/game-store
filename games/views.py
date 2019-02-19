@@ -356,7 +356,7 @@ def gaming(request):
                 scoreList = BoughtGame.objects.filter(game_info=game).order_by('-best_score')[:3]
                 bestScores = ""
                 for scores in scoreList:
-                    bestScores = bestScores + "<tr><td>" + scores.user.user.username + " --------</td><td>" + str(scores.best_score) + "</td></tr>"
+                    bestScores = bestScores + "<tr><td>" + scores.user.user.username + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>" + str(scores.best_score) + "</td></tr>"
                 response = {
                         'messageType':"SCORE",
                         'bestScore': bestScores
