@@ -284,8 +284,8 @@ def create_new_game(request):
                 return render(request, "games/newgame.html", {"error": "Same game name exists", "form": newForm})
 
             if name is not None and price is not None and url is not None and description is not None and label is not None and developer is not None and game_profile_picture is not None:
-                check_picture = bool(
-                    re.search('/([^s]+\.(?:jpg|gif|png|jpeg))$', game_profile_picture))
+                # check if the url link has an image suffix
+                check_picture = bool(re.search('(\.(jpg|png|jpeg))$', game_profile_picture))
                 if check_picture:
                     if price >= 0:
                         l = get_object_or_404(Label, type=label)
@@ -411,8 +411,7 @@ def modify_game(request, game_id):
             game = get_object_or_404(Game, pk=game_id)
 
             if name is not None and price is not None and url is not None and description is not None and label is not None and developer is not None and game_picture is not None:
-                check_picture = bool(
-                    re.search('/([^s]+\.(?:jpg|gif|png|jpeg))$', game_picture))
+                check_picture = bool(re.search('(\.(jpg|png|jpeg))$', game_picture))
                 if check_picture:
                     if price >= 0:
                         l = get_object_or_404(Label, type=label)
