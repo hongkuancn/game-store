@@ -20,6 +20,9 @@ body{
     font-size: 28px;
     font-family: Futura, Arial;
     margin: 1vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     /*color: #77abb7;*/
 }
 .row p{

@@ -45,6 +45,7 @@
 #dropdown_list>li{
     background-color: #2b2726;
     color: #b9c0d5;
+    text-align: center;
     padding-top: 5px;
 }
 .dropdown>#dropdown_list>li>a:hover{
