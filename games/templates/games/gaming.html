@@ -134,7 +134,8 @@
                     if(data.messageType=="LOAD") {
                         data.gameState = JSON.parse(data.gameState.replace(/'/g, '"'));
                         iframe.contentWindow.postMessage(data, '*');
-                    } else if(data.messageType="SCORE"){
+                    } else if(data.messageType=="SCORE"){
+                        $("#bestScore").empty();
                         $("#bestScore").html(data.bestScore);
                     }
                 }
